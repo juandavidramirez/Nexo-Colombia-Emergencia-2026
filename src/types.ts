@@ -16,10 +16,13 @@ export interface EmergencyRecord {
   
   // Donar
   organizacion?: string;
+  descripcion_organizacion?: string;
   banco?: string;
   tipo_cuenta?: string;
   numero_cuenta?: string;
+  ciudad_cobertura?: string;
   tipo_transferencia?: 'Nacional' | 'Internacional' | 'Ambas';
+  contacto_seguimiento?: string;
   
   // Acopio / General
   titulo?: string;
@@ -27,9 +30,11 @@ export interface EmergencyRecord {
   recibe?: string;
   direccion?: string;
   maps_link?: string;
+  Tipo?: string;
+  tipo_espacio?: string;
   
   // Necesidades
-  nivel_urgencia?: UrgencyLevel;
+  nivel_urgencia?: UrgencyLevel | string;
   descripcion?: string;
   fuente?: string;
   
@@ -37,10 +42,13 @@ export interface EmergencyRecord {
   lidera?: string;
   tipo_iniciativa?: string;
   link_display?: string;
+  Link_display?: string;
   link?: string;
   
   // Buscar personas/mascotas
   tipo_buscar?: 'Personas' | 'Mascotas';
+  tipo?: string;
+  nombre?: string;
   link_externo?: string;
   
   // Contactos oficiales

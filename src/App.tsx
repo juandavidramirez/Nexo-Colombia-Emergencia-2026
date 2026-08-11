@@ -1,5 +1,4 @@
 import React, { useState, useMemo } from 'react';
-import { Analytics } from '@vercel/analytics/react';
 import { CategoryType, ViewPage, EmergencyRecord } from './types';
 import { dataService } from './services/dataService';
 import { Navbar } from './components/Navbar';
@@ -10,12 +9,14 @@ import { CategoryContent } from './components/CategoryContent';
 import { DetailModal } from './components/DetailModal';
 import { ShareModal } from './components/ShareModal';
 import { ContactModal } from './components/ContactModal';
+import { ReportFormModal } from './components/ReportFormModal';
 import { QuienesSomosView } from './components/QuienesSomosView';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<ViewPage>('home');
   const [activeCategory, setActiveCategory] = useState<CategoryType>('donar');
   const [selectedCity, setSelectedCity] = useState<string>('Todas');
+  const [categorySubFilter, setCategorySubFilter] = useState<string>('Todas');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [dataVersion, setDataVersion] = useState<number>(0);
 
@@ -33,11 +34,12 @@ export default function App() {
   const [selectedRecord, setSelectedRecord] = useState<EmergencyRecord | null>(null);
   const [isShareModalOpen, setIsShareModalOpen] = useState<boolean>(false);
   const [isContactModalOpen, setIsContactModalOpen] = useState<boolean>(false);
+  const [isReportModalOpen, setIsReportModalOpen] = useState<boolean>(false);
 
-  // Filtered records
+  // Filtered records (Inclusive multi-condition AND filtering)
   const currentRecords = useMemo(() => {
-    return dataService.getRecords(activeCategory, selectedCity, searchQuery);
-  }, [activeCategory, selectedCity, searchQuery, dataVersion]);
+    return dataService.getRecords(activeCategory, selectedCity, searchQuery, categorySubFilter);
+  }, [activeCategory, selectedCity, searchQuery, categorySubFilter, dataVersion]);
 
   // Metrics & Hubs
   const siteMetrics = useMemo(() => dataService.getSiteMetrics(), [dataVersion]);
@@ -52,13 +54,19 @@ export default function App() {
     }
   };
 
+  const handleSelectCategory = (category: CategoryType) => {
+    setActiveCategory(category);
+    setCategorySubFilter('Todas');
+  };
+
   const handleClearFilters = () => {
     setSelectedCity('Todas');
+    setCategorySubFilter('Todas');
     setSearchQuery('');
   };
 
   const handleNavigateHomeWithCategory = (category: CategoryType) => {
-    setActiveCategory(category);
+    handleSelectCategory(category);
     setCurrentPage('home');
     setTimeout(() => {
       handleScrollToTabs();
@@ -75,7 +83,8 @@ export default function App() {
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
         onOpenContactModal={() => setIsContactModalOpen(true)}
-        onOpenShareModal={() => setIsShareModalOpen(true)}
+        onOpenShareModal={() => setIsReportModalOpen(true)}
+        onOpenReportModal={() => setIsReportModalOpen(true)}
       />
 
       {/* Page Routing */}
@@ -84,7 +93,7 @@ export default function App() {
           {/* Main Headline Hero */}
           <Hero
             onScrollToTabs={handleScrollToTabs}
-            onOpenShareModal={() => setIsShareModalOpen(true)}
+            onOpenShareModal={() => setIsReportModalOpen(true)}
           />
 
           {/* Level 2 Dashboard: Balance oficial de la emergencia & Movilización activa en Nexo */}
@@ -94,16 +103,19 @@ export default function App() {
             onSelectCategory={handleNavigateHomeWithCategory}
           />
 
-          {/* Sticky Architectural Filters: Category Tabs + Search Bar & City Selector */}
+          {/* Sticky Architectural Filters: Category Tabs + Search Bar & Dual Dropdown Selectors */}
           <CategoryTabs
             activeCategory={activeCategory}
-            onSelectCategory={setActiveCategory}
+            onSelectCategory={handleSelectCategory}
             selectedCity={selectedCity}
             onSelectCity={setSelectedCity}
+            categorySubFilter={categorySubFilter}
+            onSelectCategorySubFilter={setCategorySubFilter}
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
             onClearFilters={handleClearFilters}
             resultsCount={currentRecords.length}
+            onOpenReportModal={() => setIsReportModalOpen(true)}
           />
 
           {/* Active Category Content List / Cards */}
@@ -130,8 +142,8 @@ export default function App() {
               </p>
               <div className="flex flex-wrap items-center justify-center gap-3">
                 <button
-                  onClick={() => setIsShareModalOpen(true)}
-                  className="px-5 py-2.5 rounded-xl bg-[#C1443B] text-white font-extrabold text-xs sm:text-sm hover:bg-[#A83830] transition-colors shadow-xs"
+                  onClick={() => setIsReportModalOpen(true)}
+                  className="px-5 py-2.5 rounded-xl bg-[#C1443B] text-white font-extrabold text-xs sm:text-sm hover:bg-[#A83830] transition-colors shadow-xs cursor-pointer"
                 >
                   Comparte información
                 </button>
@@ -182,8 +194,13 @@ export default function App() {
         onClose={() => setIsContactModalOpen(false)}
       />
 
-      {/* Vercel Analytics */}
-      <Analytics />
+      {/* Report / Interactive Form Modal */}
+      <ReportFormModal
+        isOpen={isReportModalOpen}
+        onClose={() => setIsReportModalOpen(false)}
+        initialCategory={activeCategory}
+        onRecordCreated={() => setDataVersion((v) => v + 1)}
+      />
     </div>
   );
 }

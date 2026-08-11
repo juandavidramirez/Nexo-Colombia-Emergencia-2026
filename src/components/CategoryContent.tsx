@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { EmergencyRecord, CategoryType } from '../types';
-import { getVerificadoPorText } from '../utils/formatters';
+import { getVerificadoPorText, normalizeText } from '../utils/formatters';
 import { 
   ExternalLink, 
   MapPin, 
@@ -34,18 +34,12 @@ export const CategoryContent: React.FC<CategoryContentProps> = ({
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 9;
 
-  // Sub-filter state for category 'buscar' (Personas / Mascotas)
-  const [buscarSubFilter, setBuscarSubFilter] = useState<'Todos' | 'Personas' | 'Mascotas'>('Todos');
-
-  // Reset page and subfilter on category change
+  // Reset page when category or record count changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [category, records.length, buscarSubFilter]);
+  }, [category, records.length]);
 
-  // Compute records to render based on sub-filter for 'buscar'
-  const activeRecords = category === 'buscar' && buscarSubFilter !== 'Todos'
-    ? records.filter(r => r.tipo_buscar === buscarSubFilter)
-    : records;
+  const activeRecords = records;
 
   // Pagination metrics
   const totalPages = Math.ceil(activeRecords.length / ITEMS_PER_PAGE);
@@ -118,16 +112,13 @@ export const CategoryContent: React.FC<CategoryContentProps> = ({
           <Search className="w-6 h-6" />
         </div>
         <h3 className="text-lg font-black text-[#0B2A4A] mb-1">
-          No encontramos resultados
+          No encontramos resultados con estos filtros
         </h3>
         <p className="text-sm text-[#7A7264] mb-6">
-          Intenta cambiar el tipo de filtro, la ciudad seleccionada o limpiar el texto de búsqueda para ver más información.
+          Intenta cambiar la combinación de ciudad, el filtro de categoría o el término de búsqueda.
         </p>
         <button
-          onClick={() => {
-            setBuscarSubFilter('Todos');
-            onClearFilters();
-          }}
+          onClick={onClearFilters}
           className="px-4 py-2 rounded-xl bg-[#0B2A4A] text-white text-xs font-bold hover:bg-[#081E38] transition-colors cursor-pointer"
         >
           Limpiar todos los filtros
@@ -450,51 +441,7 @@ export const CategoryContent: React.FC<CategoryContentProps> = ({
   // 5. BUSCAR PERSONAS Y MASCOTAS (🔍)
   if (category === 'buscar') {
     return (
-      <div className="flex flex-col gap-5">
-        {/* Sub-filter tabs for Buscar: Todos / Personas / Mascotas */}
-        <div className="flex items-center justify-between gap-3 flex-wrap bg-white p-3 rounded-2xl border border-[#E9E1D2] shadow-2xs">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-xs font-black text-[#0B2A4A] uppercase tracking-wider px-1">
-              Filtrar por:
-            </span>
-            <button
-              onClick={() => setBuscarSubFilter('Todos')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                buscarSubFilter === 'Todos'
-                  ? 'bg-[#0B2A4A] text-white shadow-2xs'
-                  : 'bg-[#FAF7F1] text-[#7A7264] border border-[#E9E1D2] hover:bg-[#EAF1FB] hover:text-[#0B2A4A]'
-              }`}
-            >
-              Todos ({records.length})
-            </button>
-            <button
-              onClick={() => setBuscarSubFilter('Personas')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                buscarSubFilter === 'Personas'
-                  ? 'bg-[#1D5DBF] text-white shadow-2xs'
-                  : 'bg-[#FAF7F1] text-[#7A7264] border border-[#E9E1D2] hover:bg-[#EAF1FB] hover:text-[#1D5DBF]'
-              }`}
-            >
-              👤 Personas ({records.filter(r => r.tipo_buscar === 'Personas').length})
-            </button>
-            <button
-              onClick={() => setBuscarSubFilter('Mascotas')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                buscarSubFilter === 'Mascotas'
-                  ? 'bg-[#8A5A00] text-white shadow-2xs'
-                  : 'bg-[#FAF7F1] text-[#7A7264] border border-[#E9E1D2] hover:bg-[#FFF6E2] hover:text-[#8A5A00]'
-              }`}
-            >
-              🐾 Mascotas ({records.filter(r => r.tipo_buscar === 'Mascotas').length})
-            </button>
-          </div>
-
-          <div className="text-xs font-semibold text-[#7A7264]">
-            {activeRecords.length} iniciativas de búsqueda registradas
-          </div>
-        </div>
-
-        {/* Standard cards grid matching other categories */}
+      <div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {displayedRecords.map((it) => (
             <div 

@@ -7,13 +7,15 @@ interface NavbarProps {
   onNavigate: (page: ViewPage) => void;
   onOpenContactModal: () => void;
   onOpenShareModal: () => void;
+  onOpenReportModal: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
   currentPage,
   onNavigate,
   onOpenContactModal,
-  onOpenShareModal
+  onOpenShareModal,
+  onOpenReportModal
 }) => {
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-[#E9E1D2] shadow-xs w-full">
@@ -55,7 +57,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 title="Quiénes somos"
               >
                 <Info className="w-4 h-4 text-[#1D5DBF] shrink-0" />
-                <span className="hidden md:inline">Quiénes somos</span>
+                <span className="hidden lg:inline">Quiénes somos</span>
               </button>
 
               {/* Contacto tab */}
@@ -65,12 +67,12 @@ export const Navbar: React.FC<NavbarProps> = ({
                 title="Contacto"
               >
                 <PhoneCall className="w-4 h-4 text-[#2F8F5B] shrink-0" />
-                <span className="hidden md:inline">Contacto</span>
+                <span className="hidden lg:inline">Contacto</span>
               </button>
 
               {/* Comparte información */}
               <button
-                onClick={onOpenShareModal}
+                onClick={onOpenReportModal}
                 className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-black text-white bg-[#C1443B] hover:bg-[#A83830] shadow-xs transition-all active:scale-[0.98] shrink-0 cursor-pointer"
                 title="Comparte información"
               >

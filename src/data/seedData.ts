@@ -377,6 +377,36 @@ export const INITIAL_RECORDS: EmergencyRecord[] = [
     foto_display: 'https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?w=600&auto=format&fit=crop&q=80',
     tipo_iniciativa: 'salud y refugio'
   },
+  {
+    id: 'ini-5',
+    categoria: 'hub',
+    ciudad: 'Bogotá',
+    estado: 'aprobado',
+    titulo: 'Brigada Movilidad y Voluntariado Universitario Bogotá',
+    organizacion: 'Global Shapers Bogotá',
+    lidera: 'Natalia Castro',
+    descripcion: 'Convocatoria de voluntarios para apoyo logístico en centro de acopio y empaque de mercados solidarios.',
+    contacto: '+57 310 888 1234',
+    link_display: 'https://instagram.com/globalshapersbogota',
+    fecha: 'hace 1h',
+    foto_display: 'https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=600&auto=format&fit=crop&q=80',
+    tipo_iniciativa: 'Voluntariado'
+  },
+  {
+    id: 'ini-6',
+    categoria: 'hub',
+    ciudad: 'Medellín',
+    estado: 'aprobado',
+    titulo: 'Red de Salud Mental y Primeros Auxilios Medellín',
+    organizacion: 'Hub Medellín & Universidad de Antioquia',
+    lidera: 'Silvia Rojas',
+    descripcion: 'Brigada médica y soporte psicológico gratuito para comunidades afectadas en Valle de Aburrá.',
+    contacto: '+57 304 555 7788',
+    link_display: 'https://instagram.com/globalshapersmedellin',
+    fecha: 'hace 3h',
+    foto_display: 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?w=600&auto=format&fit=crop&q=80',
+    tipo_iniciativa: 'Salud y Brigadas'
+  },
 
   // 5. BUSCAR PERSONAS Y MASCOTAS (🔍)
   {
@@ -528,5 +558,6 @@ export const CITIES_LIST = [
   'Pereira',
   'Manizales',
   'Quibdó',
-  'Barranquilla'
+  'Barranquilla',
+  'Nacional'
 ];

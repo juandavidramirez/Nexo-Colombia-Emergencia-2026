@@ -1,5 +1,14 @@
 import { EmergencyRecord } from '../types';
 
+export function normalizeText(text: string | undefined | null): string {
+  if (!text) return '';
+  return text
+    .toString()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+}
+
 /**
  * Returns the verifier name for approved records.
  * Priority:

@@ -305,37 +305,93 @@ class DataService {
     };
   }
 
-  public getRecords(category: CategoryType, city: string, searchQuery: string): EmergencyRecord[] {
+  public getRecords(
+    category: CategoryType,
+    city: string,
+    searchQuery: string,
+    categorySubFilter: string = 'Todas'
+  ): EmergencyRecord[] {
     const q = normalizeText(searchQuery);
 
     return this.records.filter((item) => {
-      // 1. Must belong to active category
+      // 1. Must belong strictly to active category
       if (item.categoria !== category) return false;
 
       // 2. Exclude rejected records only
       if (item.estado === 'rechazado') return false;
 
-      // 3. City filter (broad check for national/virtual initiatives)
-      if (city !== 'Todas') {
-        const normCity = normalizeText(item.ciudad);
-        const isNational = 
-          !normCity ||
-          normCity.includes('nacional') || 
-          normCity.includes('colombia') || 
-          normCity.includes('virtual') || 
-          normCity.includes('digital') || 
-          normCity.includes('web') || 
-          normCity.includes('linea') || 
-          normCity.includes('pais') ||
-          normCity.includes('todas') ||
-          normCity.includes('todo');
-        const matchesCity = normCity.includes(normalizeText(city));
-        if (!isNational && !matchesCity) {
+      // 3. Strict City Filter (Enforces exact city match when a city is selected)
+      if (city && city !== 'Todas') {
+        const targetCity = normalizeText(city);
+        const itemCity = normalizeText(item.ciudad || '');
+
+        // Item must explicitly contain the selected city name
+        if (!itemCity.includes(targetCity)) {
           return false;
         }
       }
 
-      // 4. Search query
+      // 4. Category-specific Sub-Filter condition (Strict AND requirement)
+      if (categorySubFilter && categorySubFilter !== 'Todas' && categorySubFilter !== 'Todos') {
+        if (category === 'donar') {
+          const trans = (item.tipo_transferencia || '').toLowerCase();
+          const text = normalizeText(`${item.banco} ${item.tipo_cuenta} ${item.descripcion} ${item.organizacion}`);
+          if (categorySubFilter === 'Nacional') {
+            const isNac = trans.includes('nacional') || trans.includes('ambas') || text.includes('nequi') || text.includes('daviplata') || text.includes('bancolombia') || text.includes('ahorros') || text.includes('corriente');
+            if (!isNac) return false;
+          } else if (categorySubFilter === 'Internacional') {
+            const isInt = trans.includes('internacional') || trans.includes('ambas') || text.includes('zelle') || text.includes('paypal') || text.includes('swift') || text.includes('iban') || text.includes('usd') || text.includes('eur');
+            if (!isInt) return false;
+          } else if (categorySubFilter === 'Ambas') {
+            if (!trans.includes('ambas')) return false;
+          }
+        } else if (category === 'acopio') {
+          const text = normalizeText(`${item.titulo} ${item.recibe} ${item.descripcion} ${item.organizacion}`);
+          const isAlbergue = text.includes('albergue') || text.includes('refugio') || text.includes('hospedaje') || text.includes('alojamiento') || text.includes('paso') || text.includes('dormir') || text.includes('refugiat') || text.includes('albergado');
+          if (categorySubFilter === 'Albergues y refugios' && !isAlbergue) return false;
+          if (categorySubFilter === 'Puntos de acopio' && isAlbergue) return false;
+        } else if (category === 'necesidades') {
+          if (categorySubFilter === 'Alta / Inmediata' && item.nivel_urgencia !== 'urgent') return false;
+          if (categorySubFilter === 'Media' && item.nivel_urgencia !== 'medium') return false;
+          if (categorySubFilter === 'Baja' && item.nivel_urgencia !== 'low') return false;
+        } else if (category === 'hub') {
+          const text = normalizeText(`${item.tipo_iniciativa} ${item.titulo} ${item.descripcion} ${item.organizacion}`);
+          if (categorySubFilter === 'Voluntariado') {
+            if (!text.includes('voluntar')) return false;
+          } else if (categorySubFilter === 'Salud y Brigadas') {
+            const isSalud = text.includes('salud') || text.includes('medic') || text.includes('brigada') || text.includes('psico') || text.includes('sanitar') || text.includes('primeros auxilios');
+            if (!isSalud) return false;
+          } else if (categorySubFilter === 'Logística y Transporte') {
+            const isLogistics = text.includes('logis') || text.includes('transp') || text.includes('acopio') || text.includes('cadena') || text.includes('entrega') || text.includes('censo') || text.includes('corredor');
+            if (!isLogistics) return false;
+          } else if (categorySubFilter === 'Atención e Insumos') {
+            const isSpecificOther = text.includes('voluntar') || text.includes('salud') || text.includes('medic') || text.includes('psico');
+            if (isSpecificOther) return false;
+          }
+        } else if (category === 'buscar') {
+          if (categorySubFilter === 'Personas') {
+            const isPersona = item.tipo_buscar === 'Personas' || normalizeText(`${item.titulo} ${item.descripcion}`).includes('persona') || normalizeText(`${item.titulo} ${item.descripcion}`).includes('busca');
+            if (!isPersona) return false;
+          } else if (categorySubFilter === 'Mascotas') {
+            const isMascota = item.tipo_buscar === 'Mascotas' || normalizeText(`${item.titulo} ${item.descripcion}`).includes('mascota') || normalizeText(`${item.titulo} ${item.descripcion}`).includes('perro') || normalizeText(`${item.titulo} ${item.descripcion}`).includes('gato') || normalizeText(`${item.titulo} ${item.descripcion}`).includes('animal');
+            if (!isMascota) return false;
+          }
+        } else if (category === 'contactos') {
+          const text = normalizeText(`${item.entidad} ${item.titulo} ${item.descripcion}`);
+          if (categorySubFilter === 'Organismos de Socorro') {
+            const isSocorro = text.includes('cruz roja') || text.includes('defensa civil') || text.includes('bomberos') || text.includes('ungrd') || text.includes('socorro') || text.includes('rescate') || text.includes('diger') || text.includes('dagrd') || text.includes('pmu');
+            if (!isSocorro) return false;
+          } else if (categorySubFilter === 'Alcaldía y Gobernación') {
+            const isGob = text.includes('alcaldia') || text.includes('gobernacion') || text.includes('secretaria') || text.includes('policia') || text.includes('ejercito') || text.includes('alcalde') || text.includes('gobierno') || text.includes('interior');
+            if (!isGob) return false;
+          } else if (categorySubFilter === 'Salud y Emergencias') {
+            const isSaludEmerg = text.includes('salud') || text.includes('hospital') || text.includes('linea') || text.includes('emergencia') || text.includes('psicol') || text.includes('geologico') || text.includes('sgc') || text.includes('123');
+            if (!isSaludEmerg) return false;
+          }
+        }
+      }
+
+      // 5. Search query (Text keyword matching)
       if (q) {
         const searchableHaystack = [
           item.organizacion,
@@ -348,7 +404,9 @@ class DataService {
           item.lidera,
           item.entidad,
           item.contacto,
-          item.confirmado_por
+          item.confirmado_por,
+          item.tipo_iniciativa,
+          item.tipo_buscar
         ]
           .filter(Boolean)
           .join(' ');
@@ -390,6 +448,58 @@ class DataService {
 
   public getHubs(): HubInfo[] {
     return this.hubs;
+  }
+
+  public addRecord(item: Partial<EmergencyRecord> & { categoria: CategoryType }): EmergencyRecord {
+    const category = item.categoria;
+    const mapped = this.mapRowToRecord({
+      ...item,
+      estado: item.estado || 'aprobado',
+      fecha: item.fecha || 'Hace un momento',
+      fecha_hora: item.fecha_hora || new Date().toISOString()
+    }, category);
+
+    // Prepend to top of list
+    this.records.unshift(mapped);
+    this.notify();
+
+    // Async attempt to persist to Supabase if table exists
+    this.tryPersistSupabase(mapped, category);
+
+    return mapped;
+  }
+
+  private async tryPersistSupabase(record: EmergencyRecord, category: CategoryType) {
+    try {
+      const url = import.meta.env.VITE_SUPABASE_URL || DEFAULT_SUPABASE_URL;
+      const key = import.meta.env.VITE_SUPABASE_ANON_KEY || DEFAULT_SUPABASE_ANON_KEY;
+      if (!url || !key) return;
+
+      const categoryToTable: Record<CategoryType, string> = {
+        donar: 'nexo_donaciones',
+        acopio: 'nexo_acopio_albergues',
+        necesidades: 'nexo_necesidades',
+        hub: 'nexo_iniciativas',
+        buscar: 'nexo_buscar',
+        contactos: 'nexo_contactos'
+      };
+
+      const table = categoryToTable[category];
+      if (!table) return;
+
+      await fetch(`${url}/rest/v1/${table}`, {
+        method: 'POST',
+        headers: {
+          apikey: key,
+          Authorization: `Bearer ${key}`,
+          'Content-Type': 'application/json',
+          Prefer: 'return=minimal'
+        },
+        body: JSON.stringify(record)
+      });
+    } catch (err) {
+      console.warn('Supabase auto-persist attempt:', err);
+    }
   }
 }
 
