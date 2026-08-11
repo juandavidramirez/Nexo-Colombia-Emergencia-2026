@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import { CategoryType, ViewPage, EmergencyRecord } from './types';
 import { dataService } from './services/dataService';
 import { Navbar } from './components/Navbar';
@@ -180,6 +181,9 @@ export default function App() {
         isOpen={isContactModalOpen}
         onClose={() => setIsContactModalOpen(false)}
       />
+
+      {/* Vercel Analytics */}
+      <Analytics />
     </div>
   );
 }
