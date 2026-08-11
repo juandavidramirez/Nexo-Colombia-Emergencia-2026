@@ -148,9 +148,6 @@ export const CategoryContent: React.FC<CategoryContentProps> = ({
               {/* Badge Header Strip (No image) */}
               <div className="bg-[#FAF7F1] border-b border-[#E9E1D2] px-4 py-3 flex items-center justify-between flex-wrap gap-2">
                 <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="bg-[#EAF1FB] text-[#1D5DBF] font-black text-[10px] tracking-wider uppercase px-2.5 py-1 rounded-md shadow-2xs">
-                    DONAR
-                  </span>
                   <span className="bg-white text-[#7A7264] border border-[#E9E1D2] font-bold text-[10px] uppercase px-2 py-1 rounded-md shadow-2xs">
                     📍 {it.ciudad}
                   </span>
@@ -199,11 +196,17 @@ export const CategoryContent: React.FC<CategoryContentProps> = ({
                   </div>
                 )}
 
-                <div className="mt-auto pt-3 border-t border-[#E9E1D2]/60 flex items-center justify-between text-[11px] text-[#2F8F5B] font-bold">
-                  <span className="flex items-center gap-1">
-                    <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
-                    <span className="truncate max-w-[180px]">Confirmado por {it.confirmado_por}</span>
-                  </span>
+                <div className="mt-auto pt-3 border-t border-[#E9E1D2]/60 flex items-center justify-between text-[11px] font-bold">
+                  {it.estado === 'pendiente' ? (
+                    <span className="text-[#856404] flex items-center gap-1">
+                      <span>⏳ Verificación pendiente</span>
+                    </span>
+                  ) : (
+                    <span className="text-[#2F8F5B] flex items-center gap-1">
+                      <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
+                      <span className="truncate max-w-[180px]">{it.confirmado_por ? `Confirmado por ${it.confirmado_por}` : 'Verificado'}</span>
+                    </span>
+                  )}
                   <span className="text-[#7A7264] font-normal">{it.fecha}</span>
                 </div>
 
@@ -236,9 +239,6 @@ export const CategoryContent: React.FC<CategoryContentProps> = ({
               {/* Badge Header Strip (No image) */}
               <div className="bg-[#FFF6E2] border-b border-[#E9E1D2] px-4 py-3 flex items-center justify-between flex-wrap gap-2">
                 <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="bg-white text-[#8A5A00] font-black text-[10px] tracking-wider uppercase px-2.5 py-1 rounded-md shadow-2xs">
-                    ACOPIO
-                  </span>
                   <span className="bg-white text-[#0B2A4A] font-extrabold text-[10px] uppercase px-2 py-1 rounded-md shadow-2xs">
                     📍 {it.ciudad}
                   </span>
@@ -359,9 +359,11 @@ export const CategoryContent: React.FC<CategoryContentProps> = ({
               {/* Badge Header Strip (No image) */}
               <div className="bg-[#EAF1FB] border-b border-[#E9E1D2] px-4 py-3 flex items-center justify-between flex-wrap gap-2">
                 <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="bg-[#0B2A4A] text-white font-black text-[10px] tracking-wider uppercase px-2.5 py-1 rounded-md shadow-2xs">
-                    INICIATIVA
-                  </span>
+                  {it.tipo_iniciativa && (
+                    <span className="bg-[#0B2A4A] text-white font-black text-[10px] tracking-wider uppercase px-2.5 py-1 rounded-md shadow-2xs">
+                      {it.tipo_iniciativa}
+                    </span>
+                  )}
                   <span className="bg-white text-[#0B2A4A] font-extrabold text-[10px] uppercase px-2 py-1 rounded-md shadow-2xs">
                     📍 {it.ciudad}
                   </span>
@@ -384,6 +386,25 @@ export const CategoryContent: React.FC<CategoryContentProps> = ({
                   <p className="text-xs text-[#5B6B7A] line-clamp-3">
                     {it.descripcion}
                   </p>
+                )}
+
+                {/* Direct External Link if available */}
+                {(it.link_display || it.link_externo || it.link || (it.contacto && /^(https?:\/\/|www\.|[a-zA-Z0-9-]+\.(com|co|org|net|gov|io|app|me|site))\b/i.test(it.contacto.trim()))) && (
+                  <div className="pt-1">
+                    <a
+                      href={(it.link_display || it.link_externo || it.link || it.contacto!).startsWith('http') 
+                        ? (it.link_display || it.link_externo || it.link || it.contacto!) 
+                        : `https://${(it.link_display || it.link_externo || it.link || it.contacto!)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#EAF1FB] hover:bg-[#DCE7F8] text-[#1D5DBF] text-xs font-extrabold transition-colors border border-[#C2D8F2] w-full justify-center group-hover:border-[#1D5DBF]"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5 shrink-0" />
+                      <span className="truncate">
+                        Ir al sitio web / red de la iniciativa
+                      </span>
+                    </a>
+                  </div>
                 )}
 
                 <div className="mt-auto pt-2 text-[11px] text-[#7A7264] flex items-center justify-between">
@@ -472,6 +493,15 @@ export const CategoryContent: React.FC<CategoryContentProps> = ({
                   <span className="bg-white text-[#7A7264] border border-[#E9E1D2] font-bold text-[10px] uppercase px-2 py-1 rounded-md shadow-2xs">
                     📍 {it.ciudad}
                   </span>
+                  {it.estado === 'pendiente' ? (
+                    <span className="bg-[#FFF3CD] text-[#856404] border border-[#FFEEBA] font-extrabold text-[10px] uppercase px-2 py-1 rounded-md shadow-2xs">
+                      ⏳ Verificación pendiente
+                    </span>
+                  ) : (
+                    <span className="bg-[#E6F4EA] text-[#137333] border border-[#CEEAD6] font-bold text-[10px] uppercase px-2 py-1 rounded-md shadow-2xs">
+                      ✓ Verificado
+                    </span>
+                  )}
                 </div>
               </div>
 
@@ -511,8 +541,12 @@ export const CategoryContent: React.FC<CategoryContentProps> = ({
                   </div>
                 )}
 
-                <div className="mt-auto pt-3 border-t border-[#E9E1D2]/60 flex items-center justify-between text-[11px] text-[#7A7264]">
-                  <span>{it.confirmado_por ? `Confirmado por ${it.confirmado_por}` : 'Iniciativa verificada'}</span>
+                <div className="mt-auto pt-3 border-t border-[#E9E1D2]/60 flex items-center justify-between text-[11px] text-[#7A7264] font-medium">
+                  {it.estado === 'pendiente' ? (
+                    <span className="text-[#856404] font-bold">⏳ Pendiente de verificación</span>
+                  ) : (
+                    <span className="text-[#2F8F5B] font-bold">{it.confirmado_por ? `Confirmado por ${it.confirmado_por}` : 'Verificado'}</span>
+                  )}
                   <span>{it.fecha || 'Reciente'}</span>
                 </div>
 

@@ -94,7 +94,7 @@ export const PlatformMobilizationMetrics: React.FC<{
     },
     {
       key: 'acopio',
-      label: 'Puntos de acopio',
+      label: 'Puntos de acopio y albergues',
       count: siteMetrics.acopio ?? 0,
       icon: <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 text-[#8A5A00]" />,
       hoverBorder: 'hover:border-[#FFB81C]',
@@ -110,7 +110,7 @@ export const PlatformMobilizationMetrics: React.FC<{
     },
     {
       key: 'hub',
-      label: 'Iniciativas',
+      label: 'Iniciativas y servicios',
       count: siteMetrics.hub ?? siteMetrics.iniciativas ?? 0,
       icon: <Building2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 text-[#1D5DBF]" />,
       hoverBorder: 'hover:border-[#1D5DBF]',

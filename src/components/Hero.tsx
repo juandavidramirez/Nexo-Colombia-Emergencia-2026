@@ -29,7 +29,7 @@ export const Hero: React.FC<HeroProps> = ({ onScrollToTabs, onOpenShareModal }) 
 
           {/* Subtitle / Description */}
           <p className="text-base sm:text-lg text-[#5B6B7A] leading-relaxed mb-6 font-medium max-w-3xl">
-            Si necesitas ayuda o quieres darla, aquí encuentras información verificada: puntos de acopio, donaciones, contactos oficiales e iniciativas por ciudad — todo en un solo lugar.
+            Si necesitas ayuda o quieres darla, aquí encuentras información verificada: puntos de acopio y albergues, donaciones, contactos oficiales e iniciativas y servicios — todo en un solo lugar.
           </p>
 
           {/* Action Buttons */}

@@ -36,6 +36,8 @@ export interface EmergencyRecord {
   // Iniciativas
   lidera?: string;
   tipo_iniciativa?: string;
+  link_display?: string;
+  link?: string;
   
   // Buscar personas/mascotas
   tipo_buscar?: 'Personas' | 'Mascotas';

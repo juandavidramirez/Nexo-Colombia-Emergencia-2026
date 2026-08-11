@@ -27,6 +27,31 @@ export const DetailModal: React.FC<DetailModalProps> = ({ record, onClose }) => 
   const modalTitle = record.organizacion || record.titulo || record.entidad || 'Detalle de información';
 
   const contactVal = record.contacto || '';
+  const rawLink = record.link_display || record.link_externo || record.link;
+
+  const isUrl = (str: string) => {
+    if (!str) return false;
+    const trimmed = str.trim();
+    return (
+      trimmed.startsWith('@') ||
+      /^(https?:\/\/|www\.|[a-zA-Z0-9-]+\.(com|co|org|net|gov|edu|io|app|me|site|tv|lat))\b/i.test(trimmed) ||
+      /\b[a-zA-Z0-9-]+\.(com|co|org|net|gov|edu|io|app|me|site|lat|tv)\b/i.test(trimmed)
+    );
+  };
+
+  const formatUrl = (url: string) => {
+    const trimmed = url.trim();
+    if (trimmed.startsWith('@')) {
+      return `https://instagram.com/${trimmed.substring(1)}`;
+    }
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+      return trimmed;
+    }
+    return `https://${trimmed}`;
+  };
+
+  const effectiveLink = rawLink || (isUrl(contactVal) ? contactVal : null) || (isUrl(record.fuente || '') ? record.fuente : null);
+
   const isPhone = /^\+?\d[\d\s-]{4,}$/.test(contactVal.trim());
   const isEmail = contactVal.includes('@');
 
@@ -40,13 +65,39 @@ export const DetailModal: React.FC<DetailModalProps> = ({ record, onClose }) => 
         {/* Header */}
         <div className="flex items-start justify-between gap-4 mb-4 pb-3 border-b border-[#E9E1D2]">
           <div>
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-[10px] font-black uppercase px-2.5 py-0.5 rounded-md bg-[#EAF1FB] text-[#1D5DBF]">
-                {record.categoria.toUpperCase()}
-              </span>
+            <div className="flex items-center gap-2 mb-1 flex-wrap">
+              {record.categoria === 'hub' && record.tipo_iniciativa && (
+                <span className="text-[10px] font-black uppercase px-2.5 py-0.5 rounded-md bg-[#0B2A4A] text-white tracking-wider">
+                  {record.tipo_iniciativa}
+                </span>
+              )}
+              {record.categoria === 'buscar' && (
+                <span className="text-[10px] font-black uppercase px-2.5 py-0.5 rounded-md bg-[#EAF1FB] text-[#1D5DBF]">
+                  {record.tipo_buscar === 'Mascotas' ? '🐾 Mascotas' : '👤 Personas'}
+                </span>
+              )}
+              {record.categoria === 'donar' && record.tipo_transferencia && (
+                <span className="text-[10px] font-black uppercase px-2.5 py-0.5 rounded-md bg-[#FFF6E2] text-[#8A5A00]">
+                  {record.tipo_transferencia}
+                </span>
+              )}
+              {record.categoria === 'necesidades' && record.nivel_urgencia && (
+                <span className="text-[10px] font-black uppercase px-2.5 py-0.5 rounded-md bg-[#FBEAE8] text-[#8C2E27]">
+                  {record.nivel_urgencia === 'urgent' ? '🔴 Urgencia Alta' : '🟡 Urgencia Media'}
+                </span>
+              )}
               <span className="text-[11px] font-bold text-[#0B2A4A] bg-[#FAF7F1] px-2 py-0.5 rounded-md border border-[#E9E1D2]">
                 📍 {record.ciudad}
               </span>
+              {record.estado === 'pendiente' ? (
+                <span className="text-[10px] font-black uppercase px-2.5 py-0.5 rounded-md bg-[#FFF3CD] text-[#856404] border border-[#FFEEBA]">
+                  ⏳ Verificación pendiente
+                </span>
+              ) : (
+                <span className="text-[10px] font-black uppercase px-2.5 py-0.5 rounded-md bg-[#E6F4EA] text-[#137333] border border-[#CEEAD6]">
+                  ✓ Verificado
+                </span>
+              )}
             </div>
             <h2 className="text-xl font-black text-[#0B2A4A] leading-tight">
               {modalTitle}
@@ -180,6 +231,12 @@ export const DetailModal: React.FC<DetailModalProps> = ({ record, onClose }) => 
           {/* INICIATIVAS / HUB DETAILS */}
           {isHub && (
             <>
+              {record.tipo_iniciativa && (
+                <div className="py-2.5 flex justify-between gap-4">
+                  <span className="text-[#7A7264] font-medium shrink-0">Tipo de iniciativa</span>
+                  <span className="font-extrabold text-[#0B2A4A] text-right capitalize">{record.tipo_iniciativa}</span>
+                </div>
+              )}
               <div className="py-2.5 flex justify-between gap-4">
                 <span className="text-[#7A7264] font-medium shrink-0">Organización</span>
                 <span className="font-extrabold text-[#0B2A4A] text-right">{record.organizacion}</span>
@@ -196,6 +253,20 @@ export const DetailModal: React.FC<DetailModalProps> = ({ record, onClose }) => 
                   {record.descripcion}
                 </p>
               </div>
+              {effectiveLink && (
+                <div className="py-3 flex justify-between gap-4 items-center bg-[#EAF1FB] -mx-6 px-6 border-y border-[#C2D8F2]">
+                  <span className="text-[#0B2A4A] font-extrabold shrink-0">Enlace web / Información</span>
+                  <a
+                    href={formatUrl(effectiveLink)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#0B2A4A] hover:bg-[#081E38] text-white font-extrabold text-xs shadow-xs transition-colors shrink-0"
+                  >
+                    <span>Abrir enlace</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                </div>
+              )}
             </>
           )}
 
@@ -212,16 +283,52 @@ export const DetailModal: React.FC<DetailModalProps> = ({ record, onClose }) => 
                   {record.descripcion}
                 </p>
               </div>
+              {effectiveLink && (
+                <div className="py-3 flex justify-between gap-4 items-center bg-[#EAF1FB] -mx-6 px-6 border-y border-[#C2D8F2]">
+                  <span className="text-[#0B2A4A] font-extrabold shrink-0">Sitio web / Canal oficial</span>
+                  <a
+                    href={formatUrl(effectiveLink)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#0B2A4A] hover:bg-[#081E38] text-white font-extrabold text-xs shadow-xs transition-colors shrink-0"
+                  >
+                    <span>Abrir enlace</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                </div>
+              )}
             </>
+          )}
+
+          {/* FALLBACK LINK FOR OTHER CATEGORIES IF NOT YET RENDERED */}
+          {!isHub && !isDonar && !isContactos && effectiveLink && (
+            <div className="py-3 flex justify-between gap-4 items-center bg-[#EAF1FB] -mx-6 px-6 border-y border-[#C2D8F2]">
+              <span className="text-[#0B2A4A] font-extrabold shrink-0">Enlace web / Información</span>
+              <a
+                href={formatUrl(effectiveLink)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#0B2A4A] hover:bg-[#081E38] text-white font-extrabold text-xs shadow-xs transition-colors shrink-0"
+              >
+                <span>Abrir enlace</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+              </a>
+            </div>
           )}
 
           {/* CONFIRMATION & AUDIT FOOTER */}
           <div className="py-2.5 flex justify-between gap-4">
-            <span className="text-[#7A7264] font-medium shrink-0">Verificado por</span>
-            <span className="font-bold text-[#2F8F5B] text-right flex items-center gap-1">
-              <ShieldCheck className="w-3.5 h-3.5" />
-              <span>{record.confirmado_por || 'Curador Nexo Colombia'}</span>
-            </span>
+            <span className="text-[#7A7264] font-medium shrink-0">Estado de verificación</span>
+            {record.estado === 'pendiente' ? (
+              <span className="font-bold text-[#856404] text-right flex items-center gap-1">
+                <span>⏳ Pendiente de verificación</span>
+              </span>
+            ) : (
+              <span className="font-bold text-[#2F8F5B] text-right flex items-center gap-1">
+                <ShieldCheck className="w-3.5 h-3.5" />
+                <span>{record.confirmado_por ? `Verificado por ${record.confirmado_por}` : 'Verificado'}</span>
+              </span>
+            )}
           </div>
 
           <div className="py-2.5 flex justify-between gap-4">
@@ -230,15 +337,15 @@ export const DetailModal: React.FC<DetailModalProps> = ({ record, onClose }) => 
           </div>
         </div>
 
-        {/* Action Button Footer */}
-        {contactVal && (
+        {/* Action Button Footer (Only for phone calls or emails to avoid redundancy with the link row above) */}
+        {(isPhone || isEmail) && (
           <div className="mt-5 pt-4 border-t border-[#E9E1D2] flex items-center gap-3">
             {isPhone ? (
               <a
                 href={`tel:${contactVal.replace(/\s/g, '')}`}
                 className="flex-1 py-3 px-4 rounded-xl bg-[#0B2A4A] hover:bg-[#081E38] text-white font-extrabold text-xs sm:text-sm text-center flex items-center justify-center gap-2 shadow-sm transition-colors"
               >
-                <Phone className="w-4 h-4" />
+                <Phone className="w-4 h-4 shrink-0" />
                 <span>Llamar a {contactVal}</span>
               </a>
             ) : isEmail ? (
@@ -246,18 +353,10 @@ export const DetailModal: React.FC<DetailModalProps> = ({ record, onClose }) => 
                 href={`mailto:${contactVal}`}
                 className="flex-1 py-3 px-4 rounded-xl bg-[#0B2A4A] hover:bg-[#081E38] text-white font-extrabold text-xs sm:text-sm text-center flex items-center justify-center gap-2 shadow-sm transition-colors"
               >
-                <Mail className="w-4 h-4" />
+                <Mail className="w-4 h-4 shrink-0" />
                 <span>Escribir a {contactVal}</span>
               </a>
-            ) : (
-              <button
-                onClick={() => handleCopy(contactVal)}
-                className="flex-1 py-3 px-4 rounded-xl bg-[#0B2A4A] hover:bg-[#081E38] text-white font-extrabold text-xs sm:text-sm text-center flex items-center justify-center gap-2 shadow-sm transition-colors"
-              >
-                {copied ? <Check className="w-4 h-4 text-[#2F8F5B]" /> : <Copy className="w-4 h-4" />}
-                <span>{copied ? '¡Dato copiado!' : `Copiar enlace: ${contactVal}`}</span>
-              </button>
-            )}
+            ) : null}
           </div>
         )}
       </div>

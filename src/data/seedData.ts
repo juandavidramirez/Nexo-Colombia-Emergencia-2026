@@ -11,43 +11,99 @@ export const INITIAL_BALANCE: EmergencyBalance = {
 
 export const INITIAL_HUBS: HubInfo[] = [
   {
-    id: 'hub-1',
-    codigo: 'JP',
-    ciudad: 'Pereira',
-    persona: 'Johana P.',
-    rol_actividad: 'Coordinando búsqueda de contacto familiar y censo de refugios temporales en Risaralda.',
+    id: 'hub-riohacha',
+    codigo: 'RI',
+    ciudad: 'Riohacha Hub',
+    persona: 'Arianna Borely',
+    rol_actividad: 'Líder de Hub',
     estado: 'activo'
   },
   {
-    id: 'hub-2',
-    codigo: 'AM',
-    ciudad: 'Cali',
-    persona: 'Andrés M.',
-    rol_actividad: 'Logística de corredores humanitarios y jornadas de acopio masivo en Coliseo El Pueblo.',
+    id: 'hub-cartagena',
+    codigo: 'CT',
+    ciudad: 'Cartagena Hub',
+    persona: 'Valentina Velasquez',
+    rol_actividad: 'Líder de Hub',
     estado: 'activo'
   },
   {
-    id: 'hub-3',
-    codigo: 'VR',
-    ciudad: 'Manizales',
-    persona: 'Valentina R.',
-    rol_actividad: 'Levantamiento de necesidades prioritarias en zona rural y veredas del Eje Cafetero.',
+    id: 'hub-santamarta',
+    codigo: 'SM',
+    ciudad: 'Santa Marta Hub',
+    persona: 'Mariana Castro',
+    rol_actividad: 'Líder de Hub',
     estado: 'activo'
   },
   {
-    id: 'hub-4',
+    id: 'hub-bogota',
+    codigo: 'BO',
+    ciudad: 'Bogotá Hub',
+    persona: 'Natalia Castro',
+    rol_actividad: 'Líder de Hub',
+    estado: 'activo'
+  },
+  {
+    id: 'hub-medellin',
+    codigo: 'ME',
+    ciudad: 'Medellín Hub',
+    persona: 'Silvia Rojas',
+    rol_actividad: 'Líder de Hub',
+    estado: 'activo'
+  },
+  {
+    id: 'hub-manizales',
+    codigo: 'MA',
+    ciudad: 'Manizales Hub',
+    persona: 'Paola Carmona',
+    rol_actividad: 'Líder de Hub',
+    estado: 'activo'
+  },
+  {
+    id: 'hub-armenia',
+    codigo: 'AR',
+    ciudad: 'Armenia Hub',
+    persona: 'Sharif Giraldo',
+    rol_actividad: 'Líder de Hub',
+    estado: 'activo'
+  },
+  {
+    id: 'hub-cali',
+    codigo: 'CL',
+    ciudad: 'Cali Hub',
+    persona: 'Andrea Jaramillo',
+    rol_actividad: 'Líder de Hub',
+    estado: 'activo'
+  },
+  {
+    id: 'hub-pereira',
+    codigo: 'PE',
+    ciudad: 'Pereira Hub',
+    persona: 'Yhojan Rojas',
+    rol_actividad: 'Líder de Hub',
+    estado: 'activo'
+  },
+  {
+    id: 'hub-barranquilla',
+    codigo: 'BA',
+    ciudad: 'Barranquilla Hub',
+    persona: 'Yuz Madera',
+    rol_actividad: 'Líder de Hub',
+    estado: 'activo'
+  },
+  {
+    id: 'hub-caracas',
     codigo: 'CR',
-    ciudad: 'Medellín',
-    persona: 'Camilo R.',
-    rol_actividad: 'Corredor humanitario y logística de distribución de víveres en alianza con ABACO.',
+    ciudad: 'Caracas Hub',
+    persona: 'María Cristina París',
+    rol_actividad: 'Líder de Hub',
     estado: 'activo'
   },
   {
-    id: 'hub-5',
-    codigo: 'JD',
-    ciudad: 'Chocó (Quibdó)',
-    persona: 'Juan David Ramírez (Coordinador temporal)',
-    rol_actividad: 'Buscando curador local oficial. Mientras tanto, canalizando reportes directo con coordinación central.',
+    id: 'hub-choco',
+    codigo: 'CH',
+    ciudad: 'Chocó',
+    persona: 'Búsqueda de punto de contacto',
+    rol_actividad: 'Actualmente no tenemos Hub activo en Chocó, pronto tendremos un punto de contacto.',
     estado: 'pendiente'
   }
 ];
@@ -271,6 +327,7 @@ export const INITIAL_RECORDS: EmergencyRecord[] = [
     lidera: 'Johana P.',
     descripcion: 'Coordinación voluntaria para personas sin contacto familiar. Verificación presencial en albergues y centros de salud.',
     contacto: '+57 300 777 8888',
+    link_display: 'https://instagram.com/globalshaperspereira',
     fecha: 'hace 2h',
     foto_display: 'https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?w=600&auto=format&fit=crop&q=80',
     tipo_iniciativa: 'búsqueda y comunicación'
@@ -285,6 +342,7 @@ export const INITIAL_RECORDS: EmergencyRecord[] = [
     lidera: 'Andrés M.',
     descripcion: 'Operativa diaria de recepción, separación por categoría y despacho de suministros hacia municipios vecinos.',
     contacto: '+57 300 888 9999',
+    link_display: 'https://instagram.com/globalshaperscali',
     fecha: 'hace 4h',
     foto_display: 'https://images.unsplash.com/photo-1593113598332-cd288d649433?w=600&auto=format&fit=crop&q=80',
     tipo_iniciativa: 'logística y acopio'
@@ -299,6 +357,7 @@ export const INITIAL_RECORDS: EmergencyRecord[] = [
     lidera: 'Valentina R.',
     descripcion: 'Mapeo veredal en motocicleta y radiofrecuencia para registrar comunidades aisladas por derrumbes.',
     contacto: '+57 300 999 0000',
+    link_display: 'https://instagram.com/globalshapersmanizales',
     fecha: 'hace 1 día',
     foto_display: 'https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?w=600&auto=format&fit=crop&q=80',
     tipo_iniciativa: 'censo rural'
@@ -313,6 +372,7 @@ export const INITIAL_RECORDS: EmergencyRecord[] = [
     lidera: 'Equipo Cruz Roja',
     descripcion: 'Atención psicológica de primeros auxilios y espacios seguros para niños y adultos mayores.',
     contacto: '+57 601 555 4444',
+    link_display: 'https://cruzrojacolombiana.org',
     fecha: 'hace 8h',
     foto_display: 'https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?w=600&auto=format&fit=crop&q=80',
     tipo_iniciativa: 'salud y refugio'
@@ -322,17 +382,52 @@ export const INITIAL_RECORDS: EmergencyRecord[] = [
   {
     id: 'bus-1',
     categoria: 'buscar',
+    ciudad: 'Nacional',
+    estado: 'aprobado',
+    titulo: 'Colombia Te Busca — Plataforma Oficial de Registro y Consulta',
+    organizacion: 'Colombia Te Busca',
+    tipo_buscar: 'Personas',
+    descripcion: 'Plataforma nacional unificada para el registro, consulta y cruce de datos de personas desaparecidas o localizadas en refugios y albergues.',
+    contacto: 'colombiatebusca.com',
+    link_display: 'https://colombiatebusca.com',
+    link_externo: 'https://colombiatebusca.com',
+    link: 'https://colombiatebusca.com',
+    confirmado_por: 'Plataforma Nacional',
+    foto_display: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=600&auto=format&fit=crop&q=80'
+  },
+  {
+    id: 'bus-2',
+    categoria: 'buscar',
+    ciudad: 'Nacional',
+    estado: 'aprobado',
+    titulo: 'Cruz Roja Colombiana — Servicio de Restablecimiento de Contacto Familiar (RCF)',
+    organizacion: 'Cruz Roja Colombiana',
+    tipo_buscar: 'Personas',
+    descripcion: 'Atención unificada y recepción de solicitudes para ubicar a familiares sin contacto o incomunicados por la emergencia sísmica.',
+    contacto: 'cruzrojacolombiana.org',
+    link_display: 'https://cruzrojacolombiana.org',
+    link_externo: 'https://cruzrojacolombiana.org',
+    link: 'https://cruzrojacolombiana.org',
+    confirmado_por: 'Cruz Roja Colombia',
+    foto_display: 'https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?w=600&auto=format&fit=crop&q=80'
+  },
+  {
+    id: 'bus-3',
+    categoria: 'buscar',
     ciudad: 'Pereira',
     estado: 'aprobado',
     titulo: 'Brigada de Búsqueda y Registro Pereira',
     organizacion: 'Red Ciudadana Pereira',
     tipo_buscar: 'Personas',
     descripcion: 'Voluntarios en terreno rastreando zonas afectadas para cruzar datos y enviar reportes verificados a Colombia Te Busca.',
+    contacto: '+57 300 777 8888',
+    link_display: 'https://colombiatebusca.com',
     link_externo: 'https://colombiatebusca.com',
-    foto_display: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=600&auto=format&fit=crop&q=80'
+    confirmado_por: 'Global Shapers Pereira',
+    foto_display: 'https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?w=600&auto=format&fit=crop&q=80'
   },
   {
-    id: 'bus-2',
+    id: 'bus-4',
     categoria: 'buscar',
     ciudad: 'Cali',
     estado: 'aprobado',
@@ -340,11 +435,14 @@ export const INITIAL_RECORDS: EmergencyRecord[] = [
     organizacion: 'Red de Protección Animal Cali',
     tipo_buscar: 'Mascotas',
     descripcion: 'Coordinación comunitaria para rescate de perros y gatos extraviados durante el sismo y alojamiento temporal.',
+    contacto: 'instagram.com/rescateanimalcali',
+    link_display: 'https://instagram.com/rescateanimalcali',
     link_externo: 'https://instagram.com/rescateanimalcali',
+    confirmado_por: 'Voluntariado Animal Cali',
     foto_display: 'https://images.unsplash.com/photo-1548767797-d8c844163c4c?w=600&auto=format&fit=crop&q=80'
   },
   {
-    id: 'bus-3',
+    id: 'bus-5',
     categoria: 'buscar',
     ciudad: 'Pereira',
     estado: 'aprobado',
@@ -352,7 +450,10 @@ export const INITIAL_RECORDS: EmergencyRecord[] = [
     organizacion: 'Fundación Huellitas',
     tipo_buscar: 'Mascotas',
     descripcion: 'Hogar de paso para mascotas de familias damnificadas mientras se estabiliza su situación habitacional.',
+    contacto: 'facebook.com/huellitaspereira',
+    link_display: 'https://facebook.com/huellitaspereira',
     link_externo: 'https://facebook.com/huellitaspereira',
+    confirmado_por: 'Fundación Huellitas',
     foto_display: 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=600&auto=format&fit=crop&q=80'
   },
 

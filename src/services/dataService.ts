@@ -54,6 +54,8 @@ class DataService {
         nexo_necesidades: 'necesidades',
         nexo_iniciativas: 'hub',
         nexo_buscar: 'buscar',
+        nexo_personas: 'buscar',
+        nexo_mascotas: 'buscar',
         nexo_contactos: 'contactos'
       };
 
@@ -211,27 +213,44 @@ class DataService {
 
   private mapRowToRecord(item: any, category: CategoryType): EmergencyRecord {
     const rawEstado = (item.estado || 'aprobado').toString().toLowerCase();
-    const estado = rawEstado === 'rechazado' || rawEstado === 'pendiente' ? rawEstado : 'aprobado';
+    const estado = rawEstado === 'rechazado' ? 'rechazado' : rawEstado === 'pendiente' ? 'pendiente' : 'aprobado';
 
     // Extract potential URL from various possible fields
-    const directLink = item.link_externo || item.link || item.link_formulario_web || item.link_directo || item.fuente_link || '';
+    const directLink = item.link_display || item.link_externo || item.link || item.url || item.link_formulario_web || item.link_directo || item.fuente_link || item.link_web || item.link_instagram || item.canal_oficial || '';
     let extractedLink = directLink;
 
     if (!extractedLink) {
       const candidates = [
-        item.fuente,
-        item.fuente_oficial,
-        item.contacto_seguimiento,
+        item.link_display,
+        item.link_externo,
+        item.link,
+        item.url,
+        item.fuente_link,
         item.contacto_redes,
-        item.contacto
+        item.contacto_seguimiento,
+        item.contacto,
+        item.fuente,
+        item.fuente_oficial
       ];
       for (const cand of candidates) {
-        if (cand && typeof cand === 'string' && (cand.toLowerCase().includes('http') || cand.toLowerCase().includes('www.') || /\.[a-z]{2,4}(\/|$)/i.test(cand))) {
-          extractedLink = cand.trim();
-          break;
+        if (cand && typeof cand === 'string') {
+          const trimmed = cand.trim();
+          if (
+            trimmed.toLowerCase().includes('http') ||
+            trimmed.toLowerCase().includes('www.') ||
+            /\b[a-zA-Z0-9-]+\.(com|co|org|net|gov|edu|io|app|me|site|lat|tv)\b/i.test(trimmed)
+          ) {
+            extractedLink = trimmed;
+            break;
+          } else if (trimmed.startsWith('@')) {
+            extractedLink = `https://instagram.com/${trimmed.substring(1)}`;
+            break;
+          }
         }
       }
     }
+
+    const finalLink = item.link_display || extractedLink || item.link_externo || item.link || '';
 
     return {
       id: item.id || `${category}_${Math.random().toString(36).substring(2, 9)}`,
@@ -240,14 +259,14 @@ class DataService {
       estado: estado,
 
       // Donar
-      organizacion: item.organizacion || item.organizacion_entidad || item.lidera || item.quien_lidera || item.entidad || item.entidad_organismo || item.entidad_plataforma || '',
+      organizacion: item.organizacion || item.nombre || item.organizacion_entidad || item.lidera || item.quien_lidera || item.entidad || item.entidad_organismo || item.entidad_plataforma || '',
       banco: item.banco || '',
       tipo_cuenta: item.tipo_cuenta || '',
       numero_cuenta: item.numero_cuenta || '',
       tipo_transferencia: item.tipo_transferencia || 'Nacional',
 
       // Acopio & General
-      titulo: item.titulo || item.nombre_titulo || item.titulo_necesidad || item.organizacion || item.organizacion_entidad || item.entidad || item.entidad_organismo || item.entidad_plataforma || item.tipo_registro || 'Registro',
+      titulo: item.titulo || item.nombre || item.nombre_titulo || item.titulo_necesidad || item.organizacion || item.organizacion_entidad || item.entidad || item.entidad_organismo || item.entidad_plataforma || item.tipo_registro || 'Registro',
       horario: item.horario || item.horario_de_atencion || '',
       recibe: item.recibe || item.que_reciben_que_ofrecen || '',
       direccion: item.direccion || item.direccion_lugar || '',
@@ -261,18 +280,23 @@ class DataService {
       // Iniciativas
       lidera: item.lidera || item.quien_lidera || item.organizacion || '',
       tipo_iniciativa: item.tipo_iniciativa || '',
+      link_display: item.link_display || finalLink,
+      link_externo: item.link_externo || finalLink,
+      link: item.link || finalLink,
 
       // Buscar personas / mascotas
-      tipo_buscar: item.tipo_buscar || item.tipo_registro || (
-        (item.descripcion || item.titulo || '').toString().toLowerCase().includes('mascota') ? 'Mascotas' : 'Personas'
+      tipo_buscar: item.tipo_buscar || item.tipo_registro || item.tipo || (
+        (item.descripcion || item.titulo || item.nombre || '').toString().toLowerCase().includes('mascota') ||
+        (item.descripcion || item.titulo || item.nombre || '').toString().toLowerCase().includes('perro') ||
+        (item.descripcion || item.titulo || item.nombre || '').toString().toLowerCase().includes('gato') ||
+        (item.descripcion || item.titulo || item.nombre || '').toString().toLowerCase().includes('animal') ? 'Mascotas' : 'Personas'
       ),
-      link_externo: extractedLink,
 
       // Contactos
       entidad: item.entidad || item.entidad_organismo || item.entidad_plataforma || item.organizacion || '',
 
       // Audit metadata
-      confirmado_por: item.confirmado_por || item.extraido_por || 'Hub Verificado',
+      confirmado_por: item.confirmado_por || item.extraido_por || (estado === 'aprobado' ? 'Verificado' : ''),
       fecha: item.fecha || item.fecha_hora || 'recientemente',
       fecha_hora: item.fecha_hora || item.fecha || 'recientemente',
       contacto: item.contacto || item.contacto_telefono || item.contacto_redes || item.telefono_contacto || item.contacto_seguimiento || '',
@@ -288,13 +312,24 @@ class DataService {
       // 1. Must belong to active category
       if (item.categoria !== category) return false;
 
-      // 2. Must be approved
-      if (item.estado !== 'aprobado') return false;
+      // 2. Exclude rejected records only
+      if (item.estado === 'rechazado') return false;
 
-      // 3. City filter
+      // 3. City filter (broad check for national/virtual initiatives)
       if (city !== 'Todas') {
-        const isNational = normalizeText(item.ciudad).includes('nacional') || normalizeText(item.ciudad).includes('colombia');
-        const matchesCity = normalizeText(item.ciudad).includes(normalizeText(city));
+        const normCity = normalizeText(item.ciudad);
+        const isNational = 
+          !normCity ||
+          normCity.includes('nacional') || 
+          normCity.includes('colombia') || 
+          normCity.includes('virtual') || 
+          normCity.includes('digital') || 
+          normCity.includes('web') || 
+          normCity.includes('linea') || 
+          normCity.includes('pais') ||
+          normCity.includes('todas') ||
+          normCity.includes('todo');
+        const matchesCity = normCity.includes(normalizeText(city));
         if (!isNational && !matchesCity) {
           return false;
         }

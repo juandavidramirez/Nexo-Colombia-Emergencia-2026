@@ -16,9 +16,9 @@ interface CategoryTabsProps {
 
 export const CATEGORY_ITEMS: { key: CategoryType; label: string; icon: string }[] = [
   { key: 'donar', label: 'Dónde donar dinero', icon: '💰' },
-  { key: 'acopio', label: 'Puntos de acopio', icon: '📦' },
+  { key: 'acopio', label: 'Puntos de acopio y albergues', icon: '📦' },
   { key: 'necesidades', label: 'Qué se necesita ahora', icon: '🆘' },
-  { key: 'hub', label: 'Iniciativas por ciudad', icon: '🏘️' },
+  { key: 'hub', label: 'Iniciativas y servicios', icon: '🏘️' },
   { key: 'buscar', label: 'Buscar personas y mascotas', icon: '🔍' },
   { key: 'contactos', label: 'Contactos oficiales', icon: '📞' },
 ];
