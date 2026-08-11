@@ -33,16 +33,24 @@ export const CategoryContent: React.FC<CategoryContentProps> = ({
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 9;
 
-  // Reset to page 1 on category or filter/records change
+  // Sub-filter state for category 'buscar' (Personas / Mascotas)
+  const [buscarSubFilter, setBuscarSubFilter] = useState<'Todos' | 'Personas' | 'Mascotas'>('Todos');
+
+  // Reset page and subfilter on category change
   useEffect(() => {
     setCurrentPage(1);
-  }, [category, records.length]);
+  }, [category, records.length, buscarSubFilter]);
+
+  // Compute records to render based on sub-filter for 'buscar'
+  const activeRecords = category === 'buscar' && buscarSubFilter !== 'Todos'
+    ? records.filter(r => r.tipo_buscar === buscarSubFilter)
+    : records;
 
   // Pagination metrics
-  const totalPages = Math.ceil(records.length / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(activeRecords.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, records.length);
-  const displayedRecords = records.slice(startIndex, endIndex);
+  const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, activeRecords.length);
+  const displayedRecords = activeRecords.slice(startIndex, endIndex);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -58,14 +66,14 @@ export const CategoryContent: React.FC<CategoryContentProps> = ({
     return (
       <div className="mt-8 pt-6 border-t border-[#E9E1D2] flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="text-xs text-[#7A7264] font-semibold">
-          Mostrando <strong className="text-[#0B2A4A] font-black">{startIndex + 1}</strong> a <strong className="text-[#0B2A4A] font-black">{endIndex}</strong> de <strong className="text-[#0B2A4A] font-black">{records.length}</strong> resultados
+          Mostrando <strong className="text-[#0B2A4A] font-black">{startIndex + 1}</strong> a <strong className="text-[#0B2A4A] font-black">{endIndex}</strong> de <strong className="text-[#0B2A4A] font-black">{activeRecords.length}</strong> resultados
         </div>
 
         <div className="flex items-center gap-1.5 flex-wrap">
           <button
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
-            className="inline-flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-bold border border-[#E9E1D2] bg-white text-[#0B2A4A] hover:bg-[#FAF7F1] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="inline-flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-bold border border-[#E9E1D2] bg-white text-[#0B2A4A] hover:bg-[#FAF7F1] disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
           >
             <ChevronLeft className="w-4 h-4" />
             <span>Anterior</span>
@@ -77,7 +85,7 @@ export const CategoryContent: React.FC<CategoryContentProps> = ({
               <button
                 key={page}
                 onClick={() => handlePageChange(page)}
-                className={`w-8 h-8 rounded-xl text-xs font-black transition-all ${
+                className={`w-8 h-8 rounded-xl text-xs font-black transition-all cursor-pointer ${
                   isActive
                     ? 'bg-[#0B2A4A] text-white shadow-xs'
                     : 'bg-white border border-[#E9E1D2] text-[#0B2A4A] hover:bg-[#FAF7F1]'
@@ -91,7 +99,7 @@ export const CategoryContent: React.FC<CategoryContentProps> = ({
           <button
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
-            className="inline-flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-bold border border-[#E9E1D2] bg-white text-[#0B2A4A] hover:bg-[#FAF7F1] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="inline-flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-bold border border-[#E9E1D2] bg-white text-[#0B2A4A] hover:bg-[#FAF7F1] disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
           >
             <span>Siguiente</span>
             <ChevronRight className="w-4 h-4" />
@@ -102,7 +110,7 @@ export const CategoryContent: React.FC<CategoryContentProps> = ({
   };
 
   // Empty State handler
-  if (records.length === 0 && category !== 'buscar') {
+  if (activeRecords.length === 0) {
     return (
       <div className="bg-white rounded-2xl border border-[#E9E1D2] p-8 sm:p-12 text-center max-w-xl mx-auto my-8">
         <div className="w-12 h-12 rounded-2xl bg-[#FFF6E2] text-[#8A5A00] flex items-center justify-center mx-auto mb-3">
@@ -112,13 +120,16 @@ export const CategoryContent: React.FC<CategoryContentProps> = ({
           No encontramos resultados
         </h3>
         <p className="text-sm text-[#7A7264] mb-6">
-          Intenta cambiar la ciudad seleccionada o limpiar el texto de búsqueda para ver más información verificada.
+          Intenta cambiar el tipo de filtro, la ciudad seleccionada o limpiar el texto de búsqueda para ver más información.
         </p>
         <button
-          onClick={onClearFilters}
-          className="px-4 py-2 rounded-xl bg-[#0B2A4A] text-white text-xs font-bold hover:bg-[#081E38] transition-colors"
+          onClick={() => {
+            setBuscarSubFilter('Todos');
+            onClearFilters();
+          }}
+          className="px-4 py-2 rounded-xl bg-[#0B2A4A] text-white text-xs font-bold hover:bg-[#081E38] transition-colors cursor-pointer"
         >
-          Limpiar filtros de búsqueda
+          Limpiar todos los filtros
         </button>
       </div>
     );
@@ -399,79 +410,124 @@ export const CategoryContent: React.FC<CategoryContentProps> = ({
   // 5. BUSCAR PERSONAS Y MASCOTAS (🔍)
   if (category === 'buscar') {
     return (
-      <div className="flex flex-col gap-6 max-w-5xl mx-auto">
-        {/* Banner destacado canal Colombia Te Busca */}
-        <div className="bg-white border-2 border-dashed border-[#1D5DBF]/40 rounded-2xl p-6 sm:p-8 text-center bg-gradient-to-b from-[#EAF1FB]/50 to-white shadow-xs">
-          <div className="w-12 h-12 rounded-2xl bg-[#EAF1FB] text-[#1D5DBF] flex items-center justify-center mx-auto mb-3">
-            <Search className="w-6 h-6" />
+      <div className="flex flex-col gap-5">
+        {/* Sub-filter tabs for Buscar: Todos / Personas / Mascotas */}
+        <div className="flex items-center justify-between gap-3 flex-wrap bg-white p-3 rounded-2xl border border-[#E9E1D2] shadow-2xs">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-xs font-black text-[#0B2A4A] uppercase tracking-wider px-1">
+              Filtrar por:
+            </span>
+            <button
+              onClick={() => setBuscarSubFilter('Todos')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                buscarSubFilter === 'Todos'
+                  ? 'bg-[#0B2A4A] text-white shadow-2xs'
+                  : 'bg-[#FAF7F1] text-[#7A7264] border border-[#E9E1D2] hover:bg-[#EAF1FB] hover:text-[#0B2A4A]'
+              }`}
+            >
+              Todos ({records.length})
+            </button>
+            <button
+              onClick={() => setBuscarSubFilter('Personas')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                buscarSubFilter === 'Personas'
+                  ? 'bg-[#1D5DBF] text-white shadow-2xs'
+                  : 'bg-[#FAF7F1] text-[#7A7264] border border-[#E9E1D2] hover:bg-[#EAF1FB] hover:text-[#1D5DBF]'
+              }`}
+            >
+              👤 Personas ({records.filter(r => r.tipo_buscar === 'Personas').length})
+            </button>
+            <button
+              onClick={() => setBuscarSubFilter('Mascotas')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                buscarSubFilter === 'Mascotas'
+                  ? 'bg-[#8A5A00] text-white shadow-2xs'
+                  : 'bg-[#FAF7F1] text-[#7A7264] border border-[#E9E1D2] hover:bg-[#FFF6E2] hover:text-[#8A5A00]'
+              }`}
+            >
+              🐾 Mascotas ({records.filter(r => r.tipo_buscar === 'Mascotas').length})
+            </button>
           </div>
-          <h3 className="text-xl font-black text-[#0B2A4A] mb-2">
-            Buscar o reportar una persona desaparecida
-          </h3>
-          <p className="text-sm text-[#5B6B7A] max-w-2xl mx-auto mb-5 leading-relaxed">
-            No construimos un registro propio duplicado — <strong className="text-[#0B2A4A]">Colombia Te Busca</strong> centraliza la búsqueda de personas a nivel nacional. Nexo Colombia enlaza directamente para agilizar la respuesta unificada.
-          </p>
-          <a
-            href="https://colombiatebusca.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#0B2A4A] hover:bg-[#081E38] text-white font-extrabold text-sm shadow-md transition-all active:scale-[0.98]"
-          >
-            <span>Ir a colombiatebusca.com</span>
-            <ExternalLink className="w-4 h-4" />
-          </a>
+
+          <div className="text-xs font-semibold text-[#7A7264]">
+            {activeRecords.length} iniciativas de búsqueda registradas
+          </div>
         </div>
 
-        {/* Section title for local animal/person relief initiatives */}
-        <div className="pt-2">
-          <div className="flex items-center gap-2 mb-3">
-            <span className="text-xs font-black uppercase text-[#7A7264] tracking-wider">
-              Otras iniciativas de búsqueda — Personas y Mascotas
-            </span>
-            <div className="h-px bg-[#E9E1D2] flex-1" />
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {displayedRecords.map((it) => (
-              <div 
-                key={it.id} 
-                className="bg-white rounded-2xl border border-[#E9E1D2] overflow-hidden flex flex-col hover:border-[#1D5DBF] hover:shadow-md transition-all p-4 sm:p-5"
-              >
-                <div className="flex items-center justify-between gap-2 mb-3">
-                  <span className={`font-black text-[10px] uppercase px-2.5 py-1 rounded-md ${
+        {/* Standard cards grid matching other categories */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {displayedRecords.map((it) => (
+            <div 
+              key={it.id} 
+              className="bg-white rounded-2xl border border-[#E9E1D2] overflow-hidden flex flex-col hover:border-[#1D5DBF] hover:shadow-md transition-all group"
+            >
+              {/* Badge Header Strip */}
+              <div className="bg-[#FAF7F1] border-b border-[#E9E1D2] px-4 py-3 flex items-center justify-between flex-wrap gap-2">
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <span className={`font-black text-[10px] uppercase px-2.5 py-1 rounded-md shadow-2xs ${
                     it.tipo_buscar === 'Mascotas' ? 'bg-[#FFF6E2] text-[#8A5A00]' : 'bg-[#EAF1FB] text-[#1D5DBF]'
                   }`}>
                     {it.tipo_buscar === 'Mascotas' ? '🐾 Mascotas' : '👤 Personas'}
                   </span>
-                  <span className="text-[10px] font-bold text-[#7A7264] bg-[#FAF7F1] px-2 py-0.5 rounded-md border border-[#E9E1D2]">
+                  <span className="bg-white text-[#7A7264] border border-[#E9E1D2] font-bold text-[10px] uppercase px-2 py-1 rounded-md shadow-2xs">
                     📍 {it.ciudad}
                   </span>
                 </div>
-
-                <h4 className="text-base font-extrabold text-[#0B2A4A] mb-1">
-                  {it.titulo}
-                </h4>
-
-                <p className="text-xs text-[#5B6B7A] mb-4 flex-1">
-                  {it.descripcion}
-                </p>
-
-                {it.link_externo && (
-                  <a
-                    href={it.link_externo.startsWith('http') ? it.link_externo : `https://${it.link_externo}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-[#EAF1FB] hover:bg-[#DCE7F8] text-[#1D5DBF] text-xs font-extrabold transition-colors border border-[#C2D8F2] w-full mt-auto"
-                  >
-                    <span>Ir al enlace directo</span>
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </a>
-                )}
               </div>
-            ))}
-          </div>
-          {renderPagination()}
+
+              {/* Content */}
+              <div className="p-4 sm:p-5 flex flex-col flex-1 gap-3">
+                <div>
+                  <h3 className="text-base font-extrabold text-[#1E1B16] leading-snug group-hover:text-[#1D5DBF] transition-colors">
+                    {it.titulo}
+                  </h3>
+                  {it.organizacion && (
+                    <div className="text-xs font-bold text-[#1D5DBF] mt-1 flex items-center gap-1">
+                      <span>Organiza: {it.organizacion}</span>
+                    </div>
+                  )}
+                </div>
+
+                {it.descripcion && (
+                  <p className="text-xs text-[#5B6B7A] line-clamp-3">
+                    {it.descripcion}
+                  </p>
+                )}
+
+                {/* Direct External Link */}
+                {it.link_externo && (
+                  <div className="pt-1">
+                    <a
+                      href={it.link_externo.startsWith('http') ? it.link_externo : `https://${it.link_externo}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#EAF1FB] hover:bg-[#DCE7F8] text-[#1D5DBF] text-xs font-extrabold transition-colors border border-[#C2D8F2] w-full justify-center group-hover:border-[#1D5DBF]"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5 shrink-0" />
+                      <span className="truncate max-w-[220px]">
+                        Ir al canal directo: {it.link_externo.replace(/^https?:\/\//i, '').replace(/\/$/, '')}
+                      </span>
+                    </a>
+                  </div>
+                )}
+
+                <div className="mt-auto pt-3 border-t border-[#E9E1D2]/60 flex items-center justify-between text-[11px] text-[#7A7264]">
+                  <span>{it.confirmado_por ? `Confirmado por ${it.confirmado_por}` : 'Iniciativa verificada'}</span>
+                  <span>{it.fecha || 'Reciente'}</span>
+                </div>
+
+                <button
+                  onClick={() => onOpenDetail(it)}
+                  className="w-full py-2 px-3 rounded-xl bg-[#FAF7F1] hover:bg-[#EAF1FB] border border-[#E9E1D2] hover:border-[#1D5DBF] text-[#0B2A4A] text-xs font-bold transition-colors flex items-center justify-center gap-1.5 mt-1 cursor-pointer"
+                >
+                  <span>Ver detalles y contactos</span>
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
+        {renderPagination()}
       </div>
     );
   }

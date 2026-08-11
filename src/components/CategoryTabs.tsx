@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { CategoryType } from '../types';
 import { CITIES_LIST } from '../data/seedData';
-import { MapPin, X, Search } from 'lucide-react';
+import { MapPin, X, Search, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface CategoryTabsProps {
   activeCategory: CategoryType;
@@ -34,30 +34,87 @@ export const CategoryTabs: React.FC<CategoryTabsProps> = ({
   resultsCount
 }) => {
   const hasActiveFilters = selectedCity !== 'Todas' || searchQuery.trim().length > 0;
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
+  const checkScroll = () => {
+    if (scrollContainerRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
+      setCanScrollLeft(scrollLeft > 5);
+      setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 5);
+    }
+  };
+
+  useEffect(() => {
+    checkScroll();
+    window.addEventListener('resize', checkScroll);
+    return () => window.removeEventListener('resize', checkScroll);
+  }, []);
+
+  const handleScroll = (direction: 'left' | 'right') => {
+    if (scrollContainerRef.current) {
+      const scrollAmount = direction === 'left' ? -280 : 280;
+      scrollContainerRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  };
 
   return (
-    <section id="tabsAnchor" className="sticky top-[58px] sm:top-[68px] z-40 bg-[#FAF7F1]/95 backdrop-blur-md border-y border-[#E9E1D2] py-4 px-4 sm:px-6 shadow-xs">
+    <section id="tabsAnchor" className="sticky top-[61px] sm:top-[76px] z-40 bg-[#FAF7F1]/95 backdrop-blur-md border-y border-[#E9E1D2] py-4 px-4 sm:px-6 shadow-xs">
       <div className="max-w-7xl mx-auto flex flex-col gap-3.5">
         
-        {/* LEVEL 1: Primary Category Tabs */}
-        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1 max-w-full">
-          {CATEGORY_ITEMS.map((item) => {
-            const isActive = activeCategory === item.key;
-            return (
-              <button
-                key={item.key}
-                onClick={() => onSelectCategory(item.key)}
-                className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-black whitespace-nowrap transition-all shrink-0 ${
-                  isActive
-                    ? 'bg-[#0B2A4A] text-white shadow-md ring-2 ring-[#0B2A4A]'
-                    : 'bg-white text-[#7A7264] border border-[#E9E1D2] hover:bg-[#FAF7F1] hover:text-[#0B2A4A]'
-                }`}
-              >
-                <span className="text-base leading-none">{item.icon}</span>
-                <span>{item.label}</span>
-              </button>
-            );
-          })}
+        {/* LEVEL 1: Primary Category Tabs with Left & Right Scroll Arrow Buttons */}
+        <div className="relative flex items-center w-full group">
+          {/* Left Scroll Arrow */}
+          {canScrollLeft && (
+            <button
+              type="button"
+              onClick={() => handleScroll('left')}
+              className="absolute -left-2 sm:-left-3 z-10 p-2 rounded-full bg-white text-[#0B2A4A] border border-[#E9E1D2] shadow-lg hover:bg-[#EAF1FB] hover:border-[#1D5DBF] hover:scale-110 active:scale-95 transition-all flex items-center justify-center cursor-pointer"
+              aria-label="Desplazar opciones a la izquierda"
+              title="Desplazar a la izquierda"
+            >
+              <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 text-[#0B2A4A]" />
+            </button>
+          )}
+
+          {/* Scrollable Tabs Container */}
+          <div
+            ref={scrollContainerRef}
+            onScroll={checkScroll}
+            className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1 w-full scroll-smooth"
+          >
+            {CATEGORY_ITEMS.map((item) => {
+              const isActive = activeCategory === item.key;
+              return (
+                <button
+                  key={item.key}
+                  onClick={() => onSelectCategory(item.key)}
+                  className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-black whitespace-nowrap transition-all shrink-0 cursor-pointer ${
+                    isActive
+                      ? 'bg-[#0B2A4A] text-white shadow-md ring-2 ring-[#0B2A4A]'
+                      : 'bg-white text-[#7A7264] border border-[#E9E1D2] hover:bg-[#FAF7F1] hover:text-[#0B2A4A]'
+                  }`}
+                >
+                  <span className="text-base leading-none">{item.icon}</span>
+                  <span>{item.label}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Right Scroll Arrow */}
+          {canScrollRight && (
+            <button
+              type="button"
+              onClick={() => handleScroll('right')}
+              className="absolute -right-2 sm:-right-3 z-10 p-2 rounded-full bg-[#0B2A4A] text-white border border-[#0B2A4A] shadow-lg hover:bg-[#1D5DBF] hover:scale-110 active:scale-95 transition-all flex items-center justify-center cursor-pointer animate-pulse"
+              aria-label="Desplazar opciones a la derecha"
+              title="Desplazar a la derecha para ver más opciones"
+            >
+              <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+            </button>
+          )}
         </div>
 
         {/* LEVEL 2: Secondary Filter Bar (Search + City Selector) */}
