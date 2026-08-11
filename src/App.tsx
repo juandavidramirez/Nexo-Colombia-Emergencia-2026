@@ -16,6 +16,14 @@ export default function App() {
   const [activeCategory, setActiveCategory] = useState<CategoryType>('donar');
   const [selectedCity, setSelectedCity] = useState<string>('Todas');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [, setDataVersion] = useState<number>(0);
+
+  // Subscribe to live data updates from Supabase
+  React.useEffect(() => {
+    return dataService.subscribe(() => {
+      setDataVersion((v) => v + 1);
+    });
+  }, []);
 
   // Modals
   const [selectedRecord, setSelectedRecord] = useState<EmergencyRecord | null>(null);
@@ -25,12 +33,12 @@ export default function App() {
   // Filtered records
   const currentRecords = useMemo(() => {
     return dataService.getRecords(activeCategory, selectedCity, searchQuery);
-  }, [activeCategory, selectedCity, searchQuery]);
+  }, [activeCategory, selectedCity, searchQuery, dataService.getRecords]);
 
   // Metrics & Hubs
-  const siteMetrics = useMemo(() => dataService.getSiteMetrics(), []);
-  const emergencyBalance = useMemo(() => dataService.getEmergencyBalance(), []);
-  const hubsList = useMemo(() => dataService.getHubs(), []);
+  const siteMetrics = useMemo(() => dataService.getSiteMetrics(), [dataService.getSiteMetrics]);
+  const emergencyBalance = useMemo(() => dataService.getEmergencyBalance(), [dataService.getEmergencyBalance]);
+  const hubsList = useMemo(() => dataService.getHubs(), [dataService.getHubs]);
 
   // Handlers
   const handleScrollToTabs = () => {
@@ -79,6 +87,7 @@ export default function App() {
           <DashboardMetrics
             siteMetrics={siteMetrics}
             balance={emergencyBalance}
+            onSelectCategory={handleNavigateHomeWithCategory}
           />
 
           {/* Sticky Architectural Filters: Category Tabs + Search Bar & City Selector */}
