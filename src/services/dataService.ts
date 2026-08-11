@@ -296,7 +296,7 @@ class DataService {
       entidad: item.entidad || item.entidad_organismo || item.entidad_plataforma || item.organizacion || '',
 
       // Audit metadata
-      confirmado_por: item.confirmado_por || item.extraido_por || (estado === 'aprobado' ? 'Verificado' : ''),
+      confirmado_por: item.confirmado_por || item.verificado_por || item.extraido_por || item.curador || item.curado_por || item.revisado_por || '',
       fecha: item.fecha || item.fecha_hora || 'recientemente',
       fecha_hora: item.fecha_hora || item.fecha || 'recientemente',
       contacto: item.contacto || item.contacto_telefono || item.contacto_redes || item.telefono_contacto || item.contacto_seguimiento || '',

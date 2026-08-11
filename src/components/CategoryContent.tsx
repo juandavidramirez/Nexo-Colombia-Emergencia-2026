@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { EmergencyRecord, CategoryType } from '../types';
+import { getVerificadoPorText } from '../utils/formatters';
 import { 
   ExternalLink, 
   MapPin, 
@@ -204,7 +205,7 @@ export const CategoryContent: React.FC<CategoryContentProps> = ({
                   ) : (
                     <span className="text-[#2F8F5B] flex items-center gap-1">
                       <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
-                      <span className="truncate max-w-[180px]">{it.confirmado_por ? `Confirmado por ${it.confirmado_por}` : 'Verificado'}</span>
+                      <span className="truncate max-w-[200px]">Verificado por {getVerificadoPorText(it)}</span>
                     </span>
                   )}
                   <span className="text-[#7A7264] font-normal">{it.fecha}</span>
@@ -264,9 +265,16 @@ export const CategoryContent: React.FC<CategoryContentProps> = ({
                   </div>
                 )}
 
-                <div className="mt-auto pt-2 text-[11px] text-[#7A7264] flex items-center justify-between">
-                  <span>📍 {it.direccion}</span>
-                  <span className="font-medium">{it.fecha}</span>
+                <div className="mt-auto pt-2 border-t border-[#E9E1D2]/60 text-[11px] text-[#7A7264] flex items-center justify-between flex-wrap gap-1">
+                  {it.estado === 'pendiente' ? (
+                    <span className="text-[#856404] font-bold">⏳ Verificación pendiente</span>
+                  ) : (
+                    <span className="text-[#2F8F5B] font-bold flex items-center gap-1">
+                      <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
+                      <span>Verificado por {getVerificadoPorText(it)}</span>
+                    </span>
+                  )}
+                  <span className="font-medium ml-auto">{it.fecha}</span>
                 </div>
 
                 <button
@@ -322,11 +330,15 @@ export const CategoryContent: React.FC<CategoryContentProps> = ({
                   </p>
 
                   <div className="text-[11px] text-[#7A7264] flex items-center gap-2 flex-wrap mt-1">
-                    <span className="font-semibold text-[#0B2A4A]">Fuente: {it.fuente}</span>
-                    <span>•</span>
-                    <span>Confirmado por: <strong className="text-[#2F8F5B]">{it.confirmado_por}</strong></span>
-                    <span>•</span>
-                    <span>{it.fecha_hora}</span>
+                    {it.fuente && <span className="font-semibold text-[#0B2A4A]">Fuente: {it.fuente}</span>}
+                    {it.fuente && <span>•</span>}
+                    {it.estado === 'pendiente' ? (
+                      <span className="text-[#856404] font-bold">⏳ Verificación pendiente</span>
+                    ) : (
+                      <span>Verificado por: <strong className="text-[#2F8F5B]">{getVerificadoPorText(it)}</strong></span>
+                    )}
+                    {it.fecha_hora && <span>•</span>}
+                    {it.fecha_hora && <span>{it.fecha_hora}</span>}
                   </div>
                 </div>
 
@@ -407,9 +419,16 @@ export const CategoryContent: React.FC<CategoryContentProps> = ({
                   </div>
                 )}
 
-                <div className="mt-auto pt-2 text-[11px] text-[#7A7264] flex items-center justify-between">
-                  <span>Coordinación activa</span>
-                  <span>{it.fecha}</span>
+                <div className="mt-auto pt-2 border-t border-[#E9E1D2]/60 text-[11px] text-[#7A7264] flex items-center justify-between flex-wrap gap-1">
+                  {it.estado === 'pendiente' ? (
+                    <span className="text-[#856404] font-bold">⏳ Verificación pendiente</span>
+                  ) : (
+                    <span className="text-[#2F8F5B] font-bold flex items-center gap-1">
+                      <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
+                      <span>Verificado por {getVerificadoPorText(it)}</span>
+                    </span>
+                  )}
+                  <span className="font-medium ml-auto">{it.fecha}</span>
                 </div>
 
                 <button
@@ -545,7 +564,10 @@ export const CategoryContent: React.FC<CategoryContentProps> = ({
                   {it.estado === 'pendiente' ? (
                     <span className="text-[#856404] font-bold">⏳ Pendiente de verificación</span>
                   ) : (
-                    <span className="text-[#2F8F5B] font-bold">{it.confirmado_por ? `Confirmado por ${it.confirmado_por}` : 'Verificado'}</span>
+                    <span className="text-[#2F8F5B] font-bold flex items-center gap-1">
+                      <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
+                      <span>Verificado por {getVerificadoPorText(it)}</span>
+                    </span>
                   )}
                   <span>{it.fecha || 'Reciente'}</span>
                 </div>
@@ -587,13 +609,18 @@ export const CategoryContent: React.FC<CategoryContentProps> = ({
                   </div>
 
                   <div>
-                    <div className="flex items-center gap-2 mb-0.5">
+                    <div className="flex items-center gap-2 mb-0.5 flex-wrap">
                       <span className="text-[10px] font-bold text-[#7A7264] bg-[#FAF7F1] px-2 py-0.5 rounded-md border border-[#E9E1D2]">
                         📍 {it.ciudad}
                       </span>
-                      {it.confirmado_por && (
-                        <span className="text-[10px] font-bold text-[#2F8F5B]">
-                          ✓ {it.confirmado_por}
+                      {it.estado === 'pendiente' ? (
+                        <span className="text-[10px] font-bold text-[#856404] bg-[#FFF3CD] px-2 py-0.5 rounded-md border border-[#FFEEBA]">
+                          ⏳ Verificación pendiente
+                        </span>
+                      ) : (
+                        <span className="text-[10px] font-bold text-[#2F8F5B] bg-[#E6F4EA] px-2 py-0.5 rounded-md border border-[#CEEAD6] flex items-center gap-1">
+                          <ShieldCheck className="w-3 h-3 shrink-0" />
+                          <span>Verificado por {getVerificadoPorText(it)}</span>
                         </span>
                       )}
                     </div>

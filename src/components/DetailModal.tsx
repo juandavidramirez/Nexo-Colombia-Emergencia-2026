@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { EmergencyRecord } from '../types';
+import { getVerificadoPorText } from '../utils/formatters';
 import { X, Copy, Check, ExternalLink, MapPin, Phone, Mail, ShieldCheck, Image as ImageIcon } from 'lucide-react';
 
 interface DetailModalProps {
@@ -325,8 +326,8 @@ export const DetailModal: React.FC<DetailModalProps> = ({ record, onClose }) => 
               </span>
             ) : (
               <span className="font-bold text-[#2F8F5B] text-right flex items-center gap-1">
-                <ShieldCheck className="w-3.5 h-3.5" />
-                <span>{record.confirmado_por ? `Verificado por ${record.confirmado_por}` : 'Verificado'}</span>
+                <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
+                <span>Verificado por {getVerificadoPorText(record)}</span>
               </span>
             )}
           </div>
