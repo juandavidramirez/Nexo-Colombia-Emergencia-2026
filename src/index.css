@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --navy: #0B2A4A;
+    --navy-ink: #081E38;
+    --blue: #1D5DBF;
+    --blue-soft: #EAF1FB;
+    --amber: #FFB81C;
+    --amber-soft: #FFF6E2;
+    --amber-ink: #8A5A00;
+    --red: #C1443B;
+    --red-soft: #FBEAE8;
+    --green: #2F8F5B;
+    --green-soft: #E7F4EC;
+    --bg: #FAF7F1;
+    --surface: #FFFFFF;
+    --text: #1E1B16;
+    --muted: #7A7264;
+    --border: #E9E1D2;
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+/* Custom Ribbon Header Accent */
+.ribbon-gradient {
+  height: 5px;
+  background: linear-gradient(
+    90deg, 
+    var(--amber) 0%, 
+    var(--amber) 33.3%, 
+    var(--blue) 33.3%, 
+    var(--blue) 66.6%, 
+    var(--red) 66.6%, 
+    var(--red) 100%
+  );
+}
+
+/* Custom scrollbar for horizontal tabs */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Smooth modal backdrop fade */
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-modal {
+  animation: modalFadeIn 0.18s ease-out forwards;
+}

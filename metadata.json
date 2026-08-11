@@ -1,0 +1,6 @@
+{
+  "name": "Nexo Colombia",
+  "description": "Centro de información y datos verificados para la respuesta a la emergencia sísmica en Colombia",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
