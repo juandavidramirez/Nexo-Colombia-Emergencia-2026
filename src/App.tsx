@@ -16,13 +16,16 @@ export default function App() {
   const [activeCategory, setActiveCategory] = useState<CategoryType>('donar');
   const [selectedCity, setSelectedCity] = useState<string>('Todas');
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [, setDataVersion] = useState<number>(0);
+  const [dataVersion, setDataVersion] = useState<number>(0);
 
   // Subscribe to live data updates from Supabase
   React.useEffect(() => {
-    return dataService.subscribe(() => {
+    const unsubscribe = dataService.subscribe(() => {
       setDataVersion((v) => v + 1);
     });
+    // Trigger fetch on mount to get latest Supabase records
+    dataService.tryFetchSupabase();
+    return unsubscribe;
   }, []);
 
   // Modals
@@ -33,12 +36,12 @@ export default function App() {
   // Filtered records
   const currentRecords = useMemo(() => {
     return dataService.getRecords(activeCategory, selectedCity, searchQuery);
-  }, [activeCategory, selectedCity, searchQuery, dataService.getRecords]);
+  }, [activeCategory, selectedCity, searchQuery, dataVersion]);
 
   // Metrics & Hubs
-  const siteMetrics = useMemo(() => dataService.getSiteMetrics(), [dataService.getSiteMetrics]);
-  const emergencyBalance = useMemo(() => dataService.getEmergencyBalance(), [dataService.getEmergencyBalance]);
-  const hubsList = useMemo(() => dataService.getHubs(), [dataService.getHubs]);
+  const siteMetrics = useMemo(() => dataService.getSiteMetrics(), [dataVersion]);
+  const emergencyBalance = useMemo(() => dataService.getEmergencyBalance(), [dataVersion]);
+  const hubsList = useMemo(() => dataService.getHubs(), [dataVersion]);
 
   // Handlers
   const handleScrollToTabs = () => {
@@ -138,8 +141,13 @@ export default function App() {
                   Contacto con el equipo
                 </button>
               </div>
-              <div className="mt-8 pt-6 border-t border-[#E9E1D2]/60 text-xs text-[#7A7264]">
-                Iniciativa impulsada por <strong className="text-[#0B2A4A]">Global Shapers Colombia y Venezuela</strong>
+              <div className="mt-8 pt-6 border-t border-[#E9E1D2]/60 text-xs text-[#7A7264] flex flex-col items-center justify-center gap-1 text-center">
+                <div>
+                  Iniciativa impulsada por <strong className="text-[#0B2A4A]">Global Shapers Colombia y Venezuela</strong>
+                </div>
+                <div className="text-[11px] text-[#7A7264]">
+                  Nexo fue creado por <strong className="text-[#0B2A4A]">Juan David Ramírez</strong>
+                </div>
               </div>
             </div>
           </footer>

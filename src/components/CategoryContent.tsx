@@ -134,28 +134,17 @@ export const CategoryContent: React.FC<CategoryContentProps> = ({
               key={it.id} 
               className="bg-white rounded-2xl border border-[#E9E1D2] overflow-hidden flex flex-col hover:border-[#1D5DBF] hover:shadow-md transition-all group"
             >
-              {/* Image header */}
-              <div className="h-36 bg-gradient-to-br from-[#E7EFFB] to-[#DCE7F8] relative overflow-hidden flex items-center justify-center text-[#9AAEC2]">
-                {it.foto_display ? (
-                  <img 
-                    src={it.foto_display} 
-                    alt={it.organizacion} 
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    referrerPolicy="no-referrer"
-                    loading="lazy"
-                  />
-                ) : (
-                  <ImageIcon className="w-8 h-8 opacity-60" />
-                )}
-                <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
-                  <span className="bg-[#EAF1FB] text-[#1D5DBF] font-black text-[10px] tracking-wider uppercase px-2.5 py-1 rounded-md shadow-xs">
+              {/* Badge Header Strip (No image) */}
+              <div className="bg-[#FAF7F1] border-b border-[#E9E1D2] px-4 py-3 flex items-center justify-between flex-wrap gap-2">
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <span className="bg-[#EAF1FB] text-[#1D5DBF] font-black text-[10px] tracking-wider uppercase px-2.5 py-1 rounded-md shadow-2xs">
                     DONAR
                   </span>
-                  <span className="bg-[#FAF7F1] text-[#7A7264] border border-[#E9E1D2] font-bold text-[10px] uppercase px-2 py-1 rounded-md shadow-xs">
-                    {it.ciudad}
+                  <span className="bg-white text-[#7A7264] border border-[#E9E1D2] font-bold text-[10px] uppercase px-2 py-1 rounded-md shadow-2xs">
+                    📍 {it.ciudad}
                   </span>
                   {it.tipo_transferencia && (
-                    <span className="bg-[#FFF6E2] text-[#8A5A00] font-bold text-[10px] uppercase px-2 py-1 rounded-md shadow-xs">
+                    <span className="bg-[#FFF6E2] text-[#8A5A00] font-bold text-[10px] uppercase px-2 py-1 rounded-md shadow-2xs">
                       {it.tipo_transferencia}
                     </span>
                   )}
@@ -168,16 +157,35 @@ export const CategoryContent: React.FC<CategoryContentProps> = ({
                   <h3 className="text-base font-extrabold text-[#1E1B16] leading-snug group-hover:text-[#1D5DBF] transition-colors">
                     {it.organizacion}
                   </h3>
-                  <div className="text-xs font-bold text-[#0B2A4A] mt-1 flex items-center gap-1.5">
-                    <Building2 className="w-3.5 h-3.5 text-[#1D5DBF]" />
-                    <span>{it.banco} · {it.tipo_cuenta}</span>
-                  </div>
+                  {(it.banco || it.tipo_cuenta) && (
+                    <div className="text-xs font-bold text-[#0B2A4A] mt-1 flex items-center gap-1.5">
+                      <Building2 className="w-3.5 h-3.5 text-[#1D5DBF] shrink-0" />
+                      <span>{it.banco || 'Información bancaria'} {it.tipo_cuenta ? `· ${it.tipo_cuenta}` : ''}</span>
+                    </div>
+                  )}
                 </div>
 
                 {it.descripcion && (
                   <p className="text-xs text-[#7A7264] line-clamp-2">
                     {it.descripcion}
                   </p>
+                )}
+
+                {/* External URL / Website button if present */}
+                {it.link_externo && (
+                  <div className="pt-1">
+                    <a
+                      href={it.link_externo.startsWith('http') ? it.link_externo : `https://${it.link_externo}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#EAF1FB] hover:bg-[#DCE7F8] text-[#1D5DBF] text-xs font-extrabold transition-colors border border-[#C2D8F2] w-full justify-center group-hover:border-[#1D5DBF]"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5 shrink-0" />
+                      <span className="truncate max-w-[240px]">
+                        Sitio Web: {it.link_externo.replace(/^https?:\/\//i, '').replace(/\/$/, '')}
+                      </span>
+                    </a>
+                  </div>
                 )}
 
                 <div className="mt-auto pt-3 border-t border-[#E9E1D2]/60 flex items-center justify-between text-[11px] text-[#2F8F5B] font-bold">
@@ -214,24 +222,13 @@ export const CategoryContent: React.FC<CategoryContentProps> = ({
               key={it.id} 
               className="bg-white rounded-2xl border border-[#E9E1D2] overflow-hidden flex flex-col hover:border-[#FFB81C] hover:shadow-md transition-all group"
             >
-              {/* Image header */}
-              <div className="h-36 bg-gradient-to-br from-[#FFF6E2] to-[#FFE3AB] relative overflow-hidden flex items-center justify-center text-[#8A5A00]">
-                {it.foto_display ? (
-                  <img 
-                    src={it.foto_display} 
-                    alt={it.titulo} 
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    referrerPolicy="no-referrer"
-                    loading="lazy"
-                  />
-                ) : (
-                  <ImageIcon className="w-8 h-8 opacity-60" />
-                )}
-                <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
-                  <span className="bg-[#FFF6E2] text-[#8A5A00] font-black text-[10px] tracking-wider uppercase px-2.5 py-1 rounded-md shadow-xs">
+              {/* Badge Header Strip (No image) */}
+              <div className="bg-[#FFF6E2] border-b border-[#E9E1D2] px-4 py-3 flex items-center justify-between flex-wrap gap-2">
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <span className="bg-white text-[#8A5A00] font-black text-[10px] tracking-wider uppercase px-2.5 py-1 rounded-md shadow-2xs">
                     ACOPIO
                   </span>
-                  <span className="bg-white text-[#0B2A4A] font-extrabold text-[10px] uppercase px-2 py-1 rounded-md shadow-xs">
+                  <span className="bg-white text-[#0B2A4A] font-extrabold text-[10px] uppercase px-2 py-1 rounded-md shadow-2xs">
                     📍 {it.ciudad}
                   </span>
                 </div>
@@ -348,24 +345,13 @@ export const CategoryContent: React.FC<CategoryContentProps> = ({
               key={it.id} 
               className="bg-white rounded-2xl border border-[#E9E1D2] overflow-hidden flex flex-col hover:border-[#0B2A4A] hover:shadow-md transition-all group"
             >
-              {/* Image header */}
-              <div className="h-36 bg-gradient-to-br from-[#EAF1FB] to-[#DCE7F8] relative overflow-hidden flex items-center justify-center text-[#1D5DBF]">
-                {it.foto_display ? (
-                  <img 
-                    src={it.foto_display} 
-                    alt={it.titulo} 
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    referrerPolicy="no-referrer"
-                    loading="lazy"
-                  />
-                ) : (
-                  <ImageIcon className="w-8 h-8 opacity-60" />
-                )}
-                <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
-                  <span className="bg-[#0B2A4A] text-white font-black text-[10px] tracking-wider uppercase px-2.5 py-1 rounded-md shadow-xs">
+              {/* Badge Header Strip (No image) */}
+              <div className="bg-[#EAF1FB] border-b border-[#E9E1D2] px-4 py-3 flex items-center justify-between flex-wrap gap-2">
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <span className="bg-[#0B2A4A] text-white font-black text-[10px] tracking-wider uppercase px-2.5 py-1 rounded-md shadow-2xs">
                     INICIATIVA
                   </span>
-                  <span className="bg-white text-[#0B2A4A] font-extrabold text-[10px] uppercase px-2 py-1 rounded-md shadow-xs">
+                  <span className="bg-white text-[#0B2A4A] font-extrabold text-[10px] uppercase px-2 py-1 rounded-md shadow-2xs">
                     📍 {it.ciudad}
                   </span>
                 </div>
@@ -449,24 +435,16 @@ export const CategoryContent: React.FC<CategoryContentProps> = ({
             {displayedRecords.map((it) => (
               <div 
                 key={it.id} 
-                className="bg-white rounded-2xl border border-[#E9E1D2] overflow-hidden flex flex-col hover:border-[#1D5DBF] hover:shadow-md transition-all p-4"
+                className="bg-white rounded-2xl border border-[#E9E1D2] overflow-hidden flex flex-col hover:border-[#1D5DBF] hover:shadow-md transition-all p-4 sm:p-5"
               >
-                <div className="h-32 rounded-xl bg-[#EAF1FB] relative overflow-hidden mb-3 flex items-center justify-center text-[#1D5DBF]">
-                  {it.foto_display ? (
-                    <img 
-                      src={it.foto_display} 
-                      alt={it.titulo} 
-                      className="w-full h-full object-cover" 
-                      referrerPolicy="no-referrer"
-                      loading="lazy"
-                    />
-                  ) : (
-                    <ImageIcon className="w-8 h-8 opacity-60" />
-                  )}
-                  <span className={`absolute top-2.5 left-2.5 font-black text-[10px] uppercase px-2 py-0.5 rounded-md ${
+                <div className="flex items-center justify-between gap-2 mb-3">
+                  <span className={`font-black text-[10px] uppercase px-2.5 py-1 rounded-md ${
                     it.tipo_buscar === 'Mascotas' ? 'bg-[#FFF6E2] text-[#8A5A00]' : 'bg-[#EAF1FB] text-[#1D5DBF]'
                   }`}>
                     {it.tipo_buscar === 'Mascotas' ? '🐾 Mascotas' : '👤 Personas'}
+                  </span>
+                  <span className="text-[10px] font-bold text-[#7A7264] bg-[#FAF7F1] px-2 py-0.5 rounded-md border border-[#E9E1D2]">
+                    📍 {it.ciudad}
                   </span>
                 </div>
 
@@ -480,10 +458,10 @@ export const CategoryContent: React.FC<CategoryContentProps> = ({
 
                 {it.link_externo && (
                   <a
-                    href={it.link_externo}
+                    href={it.link_externo.startsWith('http') ? it.link_externo : `https://${it.link_externo}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 text-xs font-extrabold text-[#1D5DBF] hover:underline mt-auto"
+                    className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-[#EAF1FB] hover:bg-[#DCE7F8] text-[#1D5DBF] text-xs font-extrabold transition-colors border border-[#C2D8F2] w-full mt-auto"
                   >
                     <span>Ir al enlace directo</span>
                     <ExternalLink className="w-3.5 h-3.5" />

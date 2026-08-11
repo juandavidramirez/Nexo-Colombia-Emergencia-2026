@@ -35,7 +35,7 @@ export const EmergencyBalanceBanner: React.FC<{ balance: EmergencyBalance }> = (
           <h3 className="text-xs sm:text-sm font-black text-[#5C3C00] uppercase tracking-wider leading-none truncate">
             Balance oficial de la emergencia
           </h3>
-          <p className="text-[10px] sm:text-xs text-[#8A5A00]/80 font-semibold mt-1 truncate">
+          <p className="text-[11px] sm:text-xs text-[#8A5A00]/90 font-bold mt-1 leading-snug">
             {balance.fuente} · {balance.actualizado}
           </p>
         </div>

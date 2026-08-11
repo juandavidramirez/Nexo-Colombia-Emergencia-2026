@@ -84,14 +84,92 @@ class DataService {
         if (balRes.ok) {
           const balData = await balRes.json();
           if (Array.isArray(balData) && balData.length > 0) {
-            const row = balData[0];
+            // Helper to parse dates in multiple potential formats
+            const parseDateFlexible = (dateStr: any): Date | null => {
+              if (!dateStr) return null;
+              let d = new Date(dateStr);
+              if (!isNaN(d.getTime())) return d;
+              if (typeof dateStr === 'string' && dateStr.includes(' ')) {
+                d = new Date(dateStr.replace(' ', 'T'));
+                if (!isNaN(d.getTime())) return d;
+              }
+              if (typeof dateStr === 'string' && dateStr.includes('/')) {
+                const parts = dateStr.trim().split(/[\sT]+/);
+                const dateParts = parts[0].split('/');
+                if (dateParts.length === 3) {
+                  const day = parseInt(dateParts[0], 10);
+                  const month = parseInt(dateParts[1], 10) - 1;
+                  const year = parseInt(dateParts[2], 10);
+                  let hours = 0, minutes = 0, seconds = 0;
+                  if (parts[1]) {
+                    const timeParts = parts[1].split(':');
+                    hours = parseInt(timeParts[0] || '0', 10);
+                    minutes = parseInt(timeParts[1] || '0', 10);
+                    seconds = parseInt(timeParts[2] || '0', 10);
+                  }
+                  d = new Date(year, month, day, hours, minutes, seconds);
+                  if (!isNaN(d.getTime())) return d;
+                }
+              }
+              return null;
+            };
+
+            // Select row whose fecha_hora (or candidate timestamp) is closest to current time
+            const now = Date.now();
+            let bestRow = balData[0];
+            let minDiff = Infinity;
+
+            balData.forEach((row: any) => {
+              const dateCandidates = [
+                row.fecha_hora,
+                row.fecha,
+                row.updated_at,
+                row.created_at,
+                row.ultima_actualizacion
+              ];
+              for (const cand of dateCandidates) {
+                if (!cand) continue;
+                const parsed = parseDateFlexible(cand);
+                if (parsed) {
+                  const diff = Math.abs(now - parsed.getTime());
+                  if (diff < minDiff) {
+                    minDiff = diff;
+                    bestRow = row;
+                  }
+                  break;
+                }
+              }
+            });
+
+            const rawFuente = bestRow.fuente || bestRow.fuente_oficial || bestRow.entidad || bestRow.organizacion || 'UNGRD · Puesto de Mando Unificado';
+            const candDateStr = bestRow.fecha_hora || bestRow.fecha || bestRow.updated_at || bestRow.created_at || bestRow.ultima_actualizacion;
+            const parsedDate = parseDateFlexible(candDateStr);
+
+            let formattedDateText = '';
+            if (parsedDate) {
+              const datePart = parsedDate.toLocaleDateString('es-CO', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric'
+              });
+              const timePart = parsedDate.toLocaleTimeString('es-CO', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+              });
+              formattedDateText = `${datePart}, ${timePart}`;
+            } else {
+              const rawDateStr = String(bestRow.actualizado || bestRow.ultima_actualizacion || candDateStr || '');
+              formattedDateText = rawDateStr.replace(/^(reporte del|fecha y hora:|fecha:|actualizado:)\s*/i, '').trim();
+            }
+
             this.balance = {
-              muertos: parseInt(row.muertos || row.fallecidos_muertos || '0', 10) || 0,
-              heridos: parseInt(row.heridos || '0', 10) || 0,
-              desaparecidos: parseInt(row.desaparecidos || '0', 10) || 0,
-              encontrados_con_vida: parseInt(row.encontrados_con_vida || '0', 10) || 0,
-              fuente: row.fuente || row.fuente_oficial || 'UNGRD · Puesto de Mando Unificado',
-              actualizado: row.actualizado || row.ultima_actualizacion || 'recientemente'
+              muertos: parseInt(bestRow.muertos || bestRow.fallecidos_muertos || bestRow.fallecidos || '0', 10) || 0,
+              heridos: parseInt(bestRow.heridos || '0', 10) || 0,
+              desaparecidos: parseInt(bestRow.desaparecidos || '0', 10) || 0,
+              encontrados_con_vida: parseInt(bestRow.encontrados_con_vida || bestRow.rescatados || '0', 10) || 0,
+              fuente: rawFuente,
+              actualizado: formattedDateText || 'Recientemente'
             };
           }
         }
@@ -112,20 +190,48 @@ class DataService {
             if (Array.isArray(data) && data.length > 0) {
               this.records = data.map((item: any) => this.mapRowToRecord(item, item.categoria || 'donar'));
               this.notify();
+              return;
             }
           }
         } catch {
           // ignore fallback error
         }
+        // If no records in Supabase at all, use initial seed records as safe fallback
+        this.records = INITIAL_RECORDS;
+        this.notify();
       }
     } catch (e) {
       console.warn('Supabase fetch error:', e);
+      if (this.records.length === 0) {
+        this.records = INITIAL_RECORDS;
+        this.notify();
+      }
     }
   }
 
   private mapRowToRecord(item: any, category: CategoryType): EmergencyRecord {
     const rawEstado = (item.estado || 'aprobado').toString().toLowerCase();
     const estado = rawEstado === 'rechazado' || rawEstado === 'pendiente' ? rawEstado : 'aprobado';
+
+    // Extract potential URL from various possible fields
+    const directLink = item.link_externo || item.link || item.link_formulario_web || item.link_directo || item.fuente_link || '';
+    let extractedLink = directLink;
+
+    if (!extractedLink) {
+      const candidates = [
+        item.fuente,
+        item.fuente_oficial,
+        item.contacto_seguimiento,
+        item.contacto_redes,
+        item.contacto
+      ];
+      for (const cand of candidates) {
+        if (cand && typeof cand === 'string' && (cand.toLowerCase().includes('http') || cand.toLowerCase().includes('www.') || /\.[a-z]{2,4}(\/|$)/i.test(cand))) {
+          extractedLink = cand.trim();
+          break;
+        }
+      }
+    }
 
     return {
       id: item.id || `${category}_${Math.random().toString(36).substring(2, 9)}`,
@@ -160,7 +266,7 @@ class DataService {
       tipo_buscar: item.tipo_buscar || item.tipo_registro || (
         (item.descripcion || item.titulo || '').toString().toLowerCase().includes('mascota') ? 'Mascotas' : 'Personas'
       ),
-      link_externo: item.link_externo || item.link || item.link_formulario_web || item.link_directo || '',
+      link_externo: extractedLink,
 
       // Contactos
       entidad: item.entidad || item.entidad_organismo || item.entidad_plataforma || item.organizacion || '',

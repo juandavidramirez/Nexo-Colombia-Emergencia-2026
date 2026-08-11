@@ -61,36 +61,28 @@ export const DetailModal: React.FC<DetailModalProps> = ({ record, onClose }) => 
           </button>
         </div>
 
-        {/* Photo if available */}
-        {record.foto_display && (
-          <div className="w-full h-48 rounded-2xl overflow-hidden mb-5 bg-[#FAF7F1] border border-[#E9E1D2] relative">
-            <img
-              src={record.foto_display}
-              alt={modalTitle}
-              className="w-full h-full object-cover"
-              referrerPolicy="no-referrer"
-            />
-          </div>
-        )}
-
         {/* Key-Value Details List */}
         <div className="divide-y divide-[#E9E1D2]/60 text-xs sm:text-sm">
           {/* DONAR DETAILS */}
           {isDonar && (
             <>
-              <div className="py-2.5 flex justify-between gap-4">
-                <span className="text-[#7A7264] font-medium shrink-0">Banco</span>
-                <span className="font-extrabold text-[#0B2A4A] text-right">{record.banco}</span>
-              </div>
-              <div className="py-2.5 flex justify-between gap-4">
-                <span className="text-[#7A7264] font-medium shrink-0">Tipo de cuenta</span>
-                <span className="font-bold text-[#1E1B16] text-right">{record.tipo_cuenta}</span>
-              </div>
-              <div className="py-2.5 flex justify-between gap-4 items-center bg-[#FAF7F1] -mx-6 px-6 py-3 border-y border-[#E9E1D2]">
-                <span className="text-[#0B2A4A] font-extrabold shrink-0">Número de cuenta</span>
-                <div className="flex items-center gap-2">
-                  <span className="font-black text-sm text-[#1D5DBF] tracking-wider">{record.numero_cuenta}</span>
-                  {record.numero_cuenta && (
+              {record.banco && (
+                <div className="py-2.5 flex justify-between gap-4">
+                  <span className="text-[#7A7264] font-medium shrink-0">Banco</span>
+                  <span className="font-extrabold text-[#0B2A4A] text-right">{record.banco}</span>
+                </div>
+              )}
+              {record.tipo_cuenta && (
+                <div className="py-2.5 flex justify-between gap-4">
+                  <span className="text-[#7A7264] font-medium shrink-0">Tipo de cuenta</span>
+                  <span className="font-bold text-[#1E1B16] text-right">{record.tipo_cuenta}</span>
+                </div>
+              )}
+              {record.numero_cuenta && (
+                <div className="py-2.5 flex justify-between gap-4 items-center bg-[#FAF7F1] -mx-6 px-6 py-3 border-y border-[#E9E1D2]">
+                  <span className="text-[#0B2A4A] font-extrabold shrink-0">Número de cuenta</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-black text-sm text-[#1D5DBF] tracking-wider">{record.numero_cuenta}</span>
                     <button
                       onClick={() => handleCopy(record.numero_cuenta!)}
                       className="p-1.5 rounded-lg bg-white border border-[#E9E1D2] hover:bg-[#EAF1FB] text-[#1D5DBF] transition-colors"
@@ -98,17 +90,33 @@ export const DetailModal: React.FC<DetailModalProps> = ({ record, onClose }) => 
                     >
                       {copied ? <Check className="w-3.5 h-3.5 text-[#2F8F5B]" /> : <Copy className="w-3.5 h-3.5" />}
                     </button>
-                  )}
+                  </div>
                 </div>
-              </div>
+              )}
+              {record.link_externo && (
+                <div className="py-3 flex justify-between gap-4 items-center bg-[#EAF1FB] -mx-6 px-6 border-y border-[#C2D8F2]">
+                  <span className="text-[#0B2A4A] font-extrabold shrink-0">Sitio Web / Link de Donación</span>
+                  <a
+                    href={record.link_externo.startsWith('http') ? record.link_externo : `https://${record.link_externo}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#0B2A4A] hover:bg-[#081E38] text-white font-extrabold text-xs shadow-xs transition-colors"
+                  >
+                    <span>Abrir enlace</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                </div>
+              )}
               <div className="py-2.5 flex justify-between gap-4">
                 <span className="text-[#7A7264] font-medium shrink-0">Cobertura</span>
                 <span className="font-bold text-[#1E1B16] text-right">{record.ciudad}</span>
               </div>
-              <div className="py-2.5 flex justify-between gap-4">
-                <span className="text-[#7A7264] font-medium shrink-0">Tipo de transferencia</span>
-                <span className="font-bold text-[#8A5A00] text-right">{record.tipo_transferencia}</span>
-              </div>
+              {record.tipo_transferencia && (
+                <div className="py-2.5 flex justify-between gap-4">
+                  <span className="text-[#7A7264] font-medium shrink-0">Tipo de transferencia</span>
+                  <span className="font-bold text-[#8A5A00] text-right">{record.tipo_transferencia}</span>
+                </div>
+              )}
             </>
           )}
 
