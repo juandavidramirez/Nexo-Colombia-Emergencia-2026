@@ -12,6 +12,7 @@ import { ContactModal } from './components/ContactModal';
 import { ReportFormModal } from './components/ReportFormModal';
 import { QuienesSomosView } from './components/QuienesSomosView';
 import { HowItWorksModal } from './components/HowItWorksModal';
+import { GlobalShapersLogo } from './components/GlobalShapersLogo';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<ViewPage>('home');
@@ -162,6 +163,12 @@ export default function App() {
                   Contacto con el equipo
                 </button>
               </div>
+
+              {/* Centered Global Shapers brand logo */}
+              <div className="mt-8 flex justify-center">
+                <GlobalShapersLogo size="md" />
+              </div>
+
               <div className="mt-8 pt-6 border-t border-[#E9E1D2]/60 text-xs text-[#7A7264] flex flex-col items-center justify-center gap-1 text-center">
                 <div>
                   Iniciativa impulsada por <strong className="text-[#0B2A4A]">Global Shapers Colombia y Venezuela</strong>
