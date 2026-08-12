@@ -88,15 +88,15 @@ export const PlatformMobilizationMetrics: React.FC<{
       key: 'donar',
       label: 'Cuentas donación',
       count: siteMetrics.donar ?? siteMetrics.donaciones ?? 0,
-      icon: <Heart className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 text-[#2F8F5B]" />,
+      icon: <Heart className="w-3.5 h-3.5 shrink-0 text-[#2F8F5B]" />,
       hoverBorder: 'hover:border-[#2F8F5B]',
       iconColor: 'text-[#2F8F5B]'
     },
     {
       key: 'acopio',
-      label: 'Puntos de acopio y albergues',
+      label: 'Puntos de acopio',
       count: siteMetrics.acopio ?? 0,
-      icon: <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 text-[#8A5A00]" />,
+      icon: <MapPin className="w-3.5 h-3.5 shrink-0 text-[#8A5A00]" />,
       hoverBorder: 'hover:border-[#FFB81C]',
       iconColor: 'text-[#8A5A00]'
     },
@@ -104,15 +104,15 @@ export const PlatformMobilizationMetrics: React.FC<{
       key: 'necesidades',
       label: 'Necesidades',
       count: siteMetrics.necesidades ?? 0,
-      icon: <AlertTriangle className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 text-[#C1443B]" />,
+      icon: <AlertTriangle className="w-3.5 h-3.5 shrink-0 text-[#C1443B]" />,
       hoverBorder: 'hover:border-[#C1443B]',
       iconColor: 'text-[#C1443B]'
     },
     {
       key: 'hub',
-      label: 'Iniciativas y servicios',
+      label: 'Iniciativas y serv.',
       count: siteMetrics.hub ?? siteMetrics.iniciativas ?? 0,
-      icon: <Building2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 text-[#1D5DBF]" />,
+      icon: <Building2 className="w-3.5 h-3.5 shrink-0 text-[#1D5DBF]" />,
       hoverBorder: 'hover:border-[#1D5DBF]',
       iconColor: 'text-[#1D5DBF]'
     },
@@ -120,7 +120,7 @@ export const PlatformMobilizationMetrics: React.FC<{
       key: 'buscar',
       label: 'Búsquedas',
       count: siteMetrics.buscar ?? 0,
-      icon: <Search className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 text-[#8A5A00]" />,
+      icon: <Search className="w-3.5 h-3.5 shrink-0 text-[#8A5A00]" />,
       hoverBorder: 'hover:border-[#8A5A00]',
       iconColor: 'text-[#8A5A00]'
     },
@@ -128,45 +128,49 @@ export const PlatformMobilizationMetrics: React.FC<{
       key: 'contactos',
       label: 'Contactos',
       count: siteMetrics.contactos ?? 0,
-      icon: <PhoneCall className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 text-[#0B2A4A]" />,
+      icon: <PhoneCall className="w-3.5 h-3.5 shrink-0 text-[#0B2A4A]" />,
       hoverBorder: 'hover:border-[#0B2A4A]',
       iconColor: 'text-[#0B2A4A]'
     }
   ];
 
   return (
-    <div className="bg-white rounded-2xl border border-[#E9E1D2] p-4 sm:p-5 shadow-2xs flex flex-col gap-3.5">
-      {/* Header */}
-      <div className="flex items-center gap-2.5 min-w-0">
-        <div className="p-2 rounded-xl bg-[#EAF1FB] text-[#1D5DBF] shrink-0">
+    <div className="bg-white rounded-2xl border border-[#E9E1D2] p-3 sm:p-4 shadow-2xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+      {/* Header (Left aligned & centered vertically on tablet/desktop) */}
+      <div className="flex items-center gap-2.5 md:max-w-[28%] shrink-0">
+        <div className="p-1.5 sm:p-2 rounded-xl bg-[#EAF1FB] text-[#1D5DBF] shrink-0">
           <Activity className="w-4 h-4 sm:w-5 sm:h-5" />
         </div>
         <div className="min-w-0">
-          <h3 className="text-xs sm:text-sm font-black text-[#0B2A4A] uppercase tracking-wider leading-none truncate">
+          <h3 className="text-xs sm:text-sm font-black text-[#0B2A4A] uppercase tracking-wider leading-tight">
             Movilización activa en Nexo
           </h3>
-          <p className="text-[10px] sm:text-xs text-[#7A7264] font-semibold mt-1 truncate">
-            Recursos y puntos verificados en Colombia
+          <p className="text-[10px] sm:text-xs text-[#7A7264] font-semibold mt-0.5 leading-tight">
+            Recursos y puntos verificados
           </p>
         </div>
       </div>
 
-      {/* 6 Indicator Scorecards matching option bar sequence in 100% full width grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-2.5 w-full">
+      {/* 6 Indicator Scorecards in compact 2-column layout (center and right) */}
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-2 flex-1">
         {categoriesInOrder.map((cat) => (
           <button
             key={cat.key}
             type="button"
             onClick={() => onSelectCategory?.(cat.key)}
-            className={`bg-[#FAF7F1] border border-[#E9E1D2] ${cat.hoverBorder} px-2.5 py-2 sm:py-2.5 rounded-xl transition-all flex items-center justify-center gap-1.5 min-w-0 shadow-2xs cursor-pointer hover:shadow-xs active:scale-95 group text-center w-full`}
+            className={`bg-[#FAF7F1] border border-[#E9E1D2] ${cat.hoverBorder} px-2.5 py-1.5 rounded-xl transition-all flex items-center justify-between gap-1.5 min-w-0 shadow-3xs cursor-pointer hover:shadow-2xs active:scale-95 group w-full`}
             title={`Ver ${cat.label}`}
           >
-            {cat.icon}
-            <span className="text-sm sm:text-base font-black text-[#0B2A4A] leading-none shrink-0">
+            <div className="flex items-center gap-1.5 min-w-0">
+              <div className="shrink-0">
+                {cat.icon}
+              </div>
+              <span className="text-[10px] sm:text-xs font-bold text-[#5B6B7A] truncate group-hover:text-[#0B2A4A] transition-colors text-left">
+                {cat.label}
+              </span>
+            </div>
+            <span className="text-xs sm:text-sm font-black text-[#0B2A4A] shrink-0 ml-1.5 bg-white px-2 py-0.5 rounded-lg border border-[#E9E1D2]/80 group-hover:border-[#1D5DBF]/40 transition-colors">
               {cat.count}
-            </span>
-            <span className="text-[11px] sm:text-xs font-bold text-[#5B6B7A] truncate group-hover:text-[#0B2A4A] transition-colors">
-              {cat.label}
             </span>
           </button>
         ))}
