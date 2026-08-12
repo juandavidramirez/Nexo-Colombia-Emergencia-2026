@@ -309,7 +309,8 @@ class DataService {
     category: CategoryType,
     city: string,
     searchQuery: string,
-    categorySubFilter: string = 'Todas'
+    categorySubFilter: string = 'Todas',
+    verifiedFilter: string = 'Todos'
   ): EmergencyRecord[] {
     const q = normalizeText(searchQuery);
 
@@ -328,6 +329,16 @@ class DataService {
         // Item must explicitly contain the selected city name
         if (!itemCity.includes(targetCity)) {
           return false;
+        }
+      }
+
+      // Verification status filter
+      if (verifiedFilter && verifiedFilter !== 'Todos') {
+        const isVer = item.estado === 'aprobado';
+        if (verifiedFilter === 'Sí') {
+          if (!isVer) return false;
+        } else if (verifiedFilter === 'No') {
+          if (isVer) return false;
         }
       }
 
@@ -351,9 +362,14 @@ class DataService {
           if (categorySubFilter === 'Albergues y refugios' && !isAlbergue) return false;
           if (categorySubFilter === 'Puntos de acopio' && isAlbergue) return false;
         } else if (category === 'necesidades') {
-          if (categorySubFilter === 'Alta / Inmediata' && item.nivel_urgencia !== 'urgent') return false;
-          if (categorySubFilter === 'Media' && item.nivel_urgencia !== 'medium') return false;
-          if (categorySubFilter === 'Baja' && item.nivel_urgencia !== 'low') return false;
+          const urg = (item.nivel_urgencia || '').toLowerCase();
+          if (categorySubFilter === 'Alta / Inmediata') {
+            if (!urg.includes('urgent') && !urg.includes('alta') && !urg.includes('urgente') && !urg.includes('high')) return false;
+          } else if (categorySubFilter === 'Media') {
+            if (!urg.includes('medium') && !urg.includes('media')) return false;
+          } else if (categorySubFilter === 'Baja') {
+            if (!urg.includes('low') && !urg.includes('baja')) return false;
+          }
         } else if (category === 'hub') {
           const text = normalizeText(`${item.tipo_iniciativa} ${item.titulo} ${item.descripcion} ${item.organizacion}`);
           if (categorySubFilter === 'Voluntariado') {

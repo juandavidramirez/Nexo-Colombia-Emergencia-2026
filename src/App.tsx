@@ -17,6 +17,7 @@ export default function App() {
   const [activeCategory, setActiveCategory] = useState<CategoryType>('donar');
   const [selectedCity, setSelectedCity] = useState<string>('Todas');
   const [categorySubFilter, setCategorySubFilter] = useState<string>('Todas');
+  const [verifiedFilter, setVerifiedFilter] = useState<string>('Todos');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [dataVersion, setDataVersion] = useState<number>(0);
 
@@ -38,8 +39,8 @@ export default function App() {
 
   // Filtered records (Inclusive multi-condition AND filtering)
   const currentRecords = useMemo(() => {
-    return dataService.getRecords(activeCategory, selectedCity, searchQuery, categorySubFilter);
-  }, [activeCategory, selectedCity, searchQuery, categorySubFilter, dataVersion]);
+    return dataService.getRecords(activeCategory, selectedCity, searchQuery, categorySubFilter, verifiedFilter);
+  }, [activeCategory, selectedCity, searchQuery, categorySubFilter, verifiedFilter, dataVersion]);
 
   // Metrics & Hubs
   const siteMetrics = useMemo(() => dataService.getSiteMetrics(), [dataVersion]);
@@ -57,11 +58,13 @@ export default function App() {
   const handleSelectCategory = (category: CategoryType) => {
     setActiveCategory(category);
     setCategorySubFilter('Todas');
+    setVerifiedFilter('Todos');
   };
 
   const handleClearFilters = () => {
     setSelectedCity('Todas');
     setCategorySubFilter('Todas');
+    setVerifiedFilter('Todos');
     setSearchQuery('');
   };
 
@@ -111,6 +114,8 @@ export default function App() {
             onSelectCity={setSelectedCity}
             categorySubFilter={categorySubFilter}
             onSelectCategorySubFilter={setCategorySubFilter}
+            verifiedFilter={verifiedFilter}
+            onSelectVerifiedFilter={setVerifiedFilter}
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
             onClearFilters={handleClearFilters}

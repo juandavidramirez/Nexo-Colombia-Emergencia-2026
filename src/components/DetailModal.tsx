@@ -66,7 +66,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ record, onClose }) => 
         {/* Header */}
         <div className="flex items-start justify-between gap-4 mb-4 pb-3 border-b border-[#E9E1D2]">
           <div>
-            <div className="flex items-center gap-2 mb-1 flex-wrap">
+            <div className="flex items-center gap-2 mb-3 flex-wrap">
               {record.categoria === 'hub' && record.tipo_iniciativa && (
                 <span className="text-[10px] font-black uppercase px-2.5 py-0.5 rounded-md bg-[#0B2A4A] text-white tracking-wider">
                   {record.tipo_iniciativa}
@@ -100,7 +100,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ record, onClose }) => 
                 </span>
               )}
             </div>
-            <h2 className="text-xl font-black text-[#0B2A4A] leading-tight">
+            <h2 className="text-xl font-black text-[#0B2A4A] leading-tight pt-1">
               {modalTitle}
             </h2>
           </div>

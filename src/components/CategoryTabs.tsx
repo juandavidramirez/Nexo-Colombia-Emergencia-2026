@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { CategoryType } from '../types';
 import { CITIES_LIST } from '../data/seedData';
-import { MapPin, X, Search, ChevronLeft, ChevronRight, SlidersHorizontal, PlusCircle } from 'lucide-react';
+import { MapPin, X, Search, ChevronLeft, ChevronRight, SlidersHorizontal, PlusCircle, ShieldCheck } from 'lucide-react';
 
 interface CategoryTabsProps {
   activeCategory: CategoryType;
@@ -10,6 +10,8 @@ interface CategoryTabsProps {
   onSelectCity: (city: string) => void;
   categorySubFilter: string;
   onSelectCategorySubFilter: (filter: string) => void;
+  verifiedFilter: string;
+  onSelectVerifiedFilter: (filter: string) => void;
   searchQuery: string;
   onSearchChange: (query: string) => void;
   onClearFilters: () => void;
@@ -21,7 +23,7 @@ export const CATEGORY_ITEMS: { key: CategoryType; label: string; icon: string }[
   { key: 'donar', label: 'Dónde donar dinero', icon: '💰' },
   { key: 'acopio', label: 'Puntos de acopio y albergues', icon: '📦' },
   { key: 'necesidades', label: 'Qué se necesita ahora', icon: '🆘' },
-  { key: 'hub', label: 'Iniciativas y servicios', icon: '🏘️' },
+  { key: 'hub', label: 'Iniciativa y servicio', icon: '🏘️' },
   { key: 'buscar', label: 'Buscar personas y mascotas', icon: '🔍' },
   { key: 'contactos', label: 'Contactos oficiales', icon: '📞' },
 ];
@@ -102,6 +104,8 @@ export const CategoryTabs: React.FC<CategoryTabsProps> = ({
   onSelectCity,
   categorySubFilter,
   onSelectCategorySubFilter,
+  verifiedFilter,
+  onSelectVerifiedFilter,
   searchQuery,
   onSearchChange,
   onClearFilters,
@@ -110,7 +114,8 @@ export const CategoryTabs: React.FC<CategoryTabsProps> = ({
 }) => {
   const subFilterConfig = getCategorySubFilterConfig(activeCategory);
   const hasActiveSubFilter = categorySubFilter !== 'Todas' && categorySubFilter !== 'Todos';
-  const hasActiveFilters = selectedCity !== 'Todas' || searchQuery.trim().length > 0 || hasActiveSubFilter;
+  const hasActiveVerified = verifiedFilter !== 'Todos';
+  const hasActiveFilters = selectedCity !== 'Todas' || searchQuery.trim().length > 0 || hasActiveSubFilter || hasActiveVerified;
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -196,7 +201,7 @@ export const CategoryTabs: React.FC<CategoryTabsProps> = ({
         </div>
 
         {/* LEVEL 2: Compact Integrated Search & Dual Dropdown Filters Box */}
-        <div className="bg-white p-2 sm:p-2.5 rounded-2xl border border-[#E9E1D2] shadow-xs flex flex-col md:flex-row items-center gap-2">
+        <div className="bg-white p-3 rounded-2xl border border-[#E9E1D2] shadow-xs flex flex-col lg:flex-row items-stretch lg:items-center gap-2.5">
           {/* Search Input Bar (Flexible size) */}
           <div className="relative flex-1 w-full min-w-[200px]">
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#7A7264] pointer-events-none" />
@@ -218,40 +223,61 @@ export const CategoryTabs: React.FC<CategoryTabsProps> = ({
             )}
           </div>
 
-          {/* Filter 1: Common City Selector Dropdown */}
-          <div className="relative inline-flex items-center w-full md:w-auto shrink-0">
-            <MapPin className="w-3.5 h-3.5 absolute left-3 text-[#1D5DBF] pointer-events-none" />
-            <select
-              value={selectedCity}
-              onChange={(e) => onSelectCity(e.target.value)}
-              className="w-full md:w-auto pl-8 pr-7 py-2 text-xs sm:text-sm font-extrabold bg-[#EAF1FB] border border-[#1D5DBF]/30 text-[#0B2A4A] rounded-xl cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#1D5DBF] hover:bg-[#d8e7fa] transition-colors"
-            >
-              {CITIES_LIST.map((c) => (
-                <option key={c} value={c}>
-                  {c === 'Todas' ? '📍 Ciudad: (Todas)' : `📍 Ciudad: ${c}`}
-                </option>
-              ))}
-            </select>
-          </div>
+          {/* Right Filters Group (Compact & Wrap-safe for Tablet/Desktop) */}
+          <div className="flex flex-wrap items-center gap-2 shrink-0">
+            {/* Filter 1: Common City Selector Dropdown */}
+            <div className="relative inline-flex items-center flex-1 sm:flex-initial">
+              <MapPin className="w-3.5 h-3.5 absolute left-3 text-[#1D5DBF] pointer-events-none" />
+              <select
+                value={selectedCity}
+                onChange={(e) => onSelectCity(e.target.value)}
+                className="w-full sm:w-auto pl-8 pr-7 py-1.5 text-xs font-bold bg-[#EAF1FB] border border-[#1D5DBF]/30 text-[#0B2A4A] rounded-xl cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#1D5DBF] hover:bg-[#d8e7fa] transition-colors truncate max-w-[180px]"
+              >
+                {CITIES_LIST.map((c) => (
+                  <option key={c} value={c}>
+                    {c === 'Todas' ? '📍 Ciudad: (Todas)' : `📍 ${c}`}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          {/* Filter 2: Category-Specific Dropdown Filter */}
-          <div className="relative inline-flex items-center w-full md:w-auto shrink-0">
-            <SlidersHorizontal className="w-3.5 h-3.5 absolute left-3 text-[#0B2A4A] pointer-events-none" />
-            <select
-              value={categorySubFilter}
-              onChange={(e) => onSelectCategorySubFilter(e.target.value)}
-              className={`w-full md:w-auto pl-8 pr-7 py-2 text-xs sm:text-sm font-extrabold rounded-xl cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#0B2A4A] transition-colors border ${
-                hasActiveSubFilter
-                  ? 'bg-[#0B2A4A] text-white border-[#0B2A4A]'
-                  : 'bg-[#FAF7F1] border-[#E9E1D2] text-[#0B2A4A] hover:bg-[#EAF1FB]'
-              }`}
-            >
-              {subFilterConfig.options.map((opt) => (
-                <option key={opt.value} value={opt.value} className="bg-white text-[#0B2A4A]">
-                  {opt.label}
-                </option>
-              ))}
-            </select>
+            {/* Filter 2: Category-Specific Dropdown Filter */}
+            <div className="relative inline-flex items-center flex-1 sm:flex-initial">
+              <SlidersHorizontal className="w-3.5 h-3.5 absolute left-3 text-[#0B2A4A] pointer-events-none" />
+              <select
+                value={categorySubFilter}
+                onChange={(e) => onSelectCategorySubFilter(e.target.value)}
+                className={`w-full sm:w-auto pl-8 pr-7 py-1.5 text-xs font-bold rounded-xl cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#0B2A4A] transition-colors border truncate max-w-[200px] ${
+                  hasActiveSubFilter
+                    ? 'bg-[#0B2A4A] text-white border-[#0B2A4A]'
+                    : 'bg-[#FAF7F1] border-[#E9E1D2] text-[#0B2A4A] hover:bg-[#EAF1FB]'
+                }`}
+              >
+                {subFilterConfig.options.map((opt) => (
+                  <option key={opt.value} value={opt.value} className="bg-white text-[#0B2A4A]">
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Filter 3: Verified Status Filter */}
+            <div className="relative inline-flex items-center flex-1 sm:flex-initial">
+              <ShieldCheck className="w-3.5 h-3.5 absolute left-3 text-[#2F8F5B] pointer-events-none" />
+              <select
+                value={verifiedFilter}
+                onChange={(e) => onSelectVerifiedFilter(e.target.value)}
+                className={`w-full sm:w-auto pl-8 pr-7 py-1.5 text-xs font-bold rounded-xl cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#2F8F5B] transition-colors border truncate max-w-[180px] ${
+                  verifiedFilter !== 'Todos'
+                    ? 'bg-[#2F8F5B] text-white border-[#2F8F5B]'
+                    : 'bg-[#FAF7F1] border-[#E9E1D2] text-[#0B2A4A] hover:bg-[#EAF1FB]'
+                }`}
+              >
+                <option value="Todos" className="bg-white text-[#0B2A4A]">✓ Verif: Todos</option>
+                <option value="Sí" className="bg-white text-[#0B2A4A]">✓ Verificado: Sí</option>
+                <option value="No" className="bg-white text-[#0B2A4A]">⏳ Verificado: No</option>
+              </select>
+            </div>
           </div>
         </div>
 
@@ -271,6 +297,12 @@ export const CategoryTabs: React.FC<CategoryTabsProps> = ({
             {hasActiveSubFilter && (
               <span className="inline-flex items-center gap-1 bg-[#EAF1FB] text-[#0B2A4A] font-bold px-2.5 py-0.5 rounded-md border border-[#0B2A4A]/20">
                 <span>{subFilterConfig.label}: {categorySubFilter}</span>
+              </span>
+            )}
+
+            {verifiedFilter !== 'Todos' && (
+              <span className="inline-flex items-center gap-1 bg-[#E6F4EA] text-[#137333] font-bold px-2.5 py-0.5 rounded-md border border-[#CEEAD6]">
+                <span>Verificado: {verifiedFilter}</span>
               </span>
             )}
 

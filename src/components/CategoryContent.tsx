@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { EmergencyRecord, CategoryType } from '../types';
-import { getVerificadoPorText, normalizeText } from '../utils/formatters';
+import { getVerificadoPorText, normalizeText, formatDisplayDate } from '../utils/formatters';
 import { 
   ExternalLink, 
   MapPin, 
@@ -137,15 +137,15 @@ export const CategoryContent: React.FC<CategoryContentProps> = ({
               key={it.id} 
               className="bg-white rounded-2xl border border-[#E9E1D2] overflow-hidden flex flex-col hover:border-[#1D5DBF] hover:shadow-md transition-all group"
             >
-              {/* Badge Header Strip (No image) */}
+              {/* Badge Header Strip */}
               <div className="bg-[#FAF7F1] border-b border-[#E9E1D2] px-4 py-3 flex items-center justify-between flex-wrap gap-2">
                 <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="bg-white text-[#7A7264] border border-[#E9E1D2] font-bold text-[10px] uppercase px-2 py-1 rounded-md shadow-2xs">
+                  <span className="bg-white text-[#0B2A4A] border border-[#E9E1D2] font-bold text-[10px] uppercase px-2.5 py-1 rounded-md shadow-2xs">
                     📍 {it.ciudad}
                   </span>
                   {it.tipo_transferencia && (
-                    <span className="bg-[#FFF6E2] text-[#8A5A00] font-bold text-[10px] uppercase px-2 py-1 rounded-md shadow-2xs">
-                      {it.tipo_transferencia}
+                    <span className="bg-[#EAF1FB] text-[#1D5DBF] font-bold text-[10px] uppercase px-2.5 py-1 rounded-md shadow-2xs">
+                      💳 {it.tipo_transferencia}
                     </span>
                   )}
                 </div>
@@ -153,12 +153,12 @@ export const CategoryContent: React.FC<CategoryContentProps> = ({
 
               {/* Content */}
               <div className="p-4 sm:p-5 flex flex-col flex-1 gap-3">
-                <div>
+                <div className="pt-1">
                   <h3 className="text-base font-extrabold text-[#1E1B16] leading-snug group-hover:text-[#1D5DBF] transition-colors">
                     {it.organizacion}
                   </h3>
                   {(it.banco || it.tipo_cuenta) && (
-                    <div className="text-xs font-bold text-[#0B2A4A] mt-1 flex items-center gap-1.5">
+                    <div className="text-xs font-bold text-[#0B2A4A] mt-1.5 flex items-center gap-1.5">
                       <Building2 className="w-3.5 h-3.5 text-[#1D5DBF] shrink-0" />
                       <span>{it.banco || 'Información bancaria'} {it.tipo_cuenta ? `· ${it.tipo_cuenta}` : ''}</span>
                     </div>
@@ -166,7 +166,7 @@ export const CategoryContent: React.FC<CategoryContentProps> = ({
                 </div>
 
                 {it.descripcion && (
-                  <p className="text-xs text-[#7A7264] line-clamp-2">
+                  <p className="text-xs text-[#5B6B7A] line-clamp-3">
                     {it.descripcion}
                   </p>
                 )}
@@ -199,12 +199,12 @@ export const CategoryContent: React.FC<CategoryContentProps> = ({
                       <span className="truncate max-w-[200px]">Verificado por {getVerificadoPorText(it)}</span>
                     </span>
                   )}
-                  <span className="text-[#7A7264] font-normal">{it.fecha}</span>
+                  <span className="text-[#7A7264] font-normal">{formatDisplayDate(it.fecha || it.fecha_hora)}</span>
                 </div>
 
                 <button
                   onClick={() => onOpenDetail(it)}
-                  className="w-full py-2 px-3 rounded-xl bg-[#FAF7F1] hover:bg-[#EAF1FB] border border-[#E9E1D2] hover:border-[#1D5DBF] text-[#0B2A4A] text-xs font-bold transition-colors flex items-center justify-center gap-1.5 mt-1"
+                  className="w-full py-2 px-3 rounded-xl bg-[#FAF7F1] hover:bg-[#EAF1FB] border border-[#E9E1D2] hover:border-[#1D5DBF] text-[#0B2A4A] text-xs font-bold transition-colors flex items-center justify-center gap-1.5 mt-1 cursor-pointer"
                 >
                   <span>Ver número de cuenta y detalles</span>
                   <ChevronRight className="w-3.5 h-3.5" />
@@ -223,61 +223,80 @@ export const CategoryContent: React.FC<CategoryContentProps> = ({
     return (
       <div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {displayedRecords.map((it) => (
-            <div 
-              key={it.id} 
-              className="bg-white rounded-2xl border border-[#E9E1D2] overflow-hidden flex flex-col hover:border-[#FFB81C] hover:shadow-md transition-all group"
-            >
-              {/* Badge Header Strip (No image) */}
-              <div className="bg-[#FFF6E2] border-b border-[#E9E1D2] px-4 py-3 flex items-center justify-between flex-wrap gap-2">
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="bg-white text-[#0B2A4A] font-extrabold text-[10px] uppercase px-2 py-1 rounded-md shadow-2xs">
-                    📍 {it.ciudad}
-                  </span>
-                </div>
-              </div>
-
-              {/* Content */}
-              <div className="p-4 sm:p-5 flex flex-col flex-1 gap-3">
-                <div>
-                  <h3 className="text-base font-extrabold text-[#1E1B16] leading-snug group-hover:text-[#8A5A00] transition-colors">
-                    {it.titulo}
-                  </h3>
-                  <div className="text-xs font-bold text-[#8A5A00] mt-1 flex items-center gap-1.5">
-                    <Clock className="w-3.5 h-3.5 shrink-0" />
-                    <span>{it.horario}</span>
-                  </div>
-                </div>
-
-                {it.recibe && (
-                  <div className="bg-[#FAF7F1] p-2.5 rounded-xl border border-[#E9E1D2] text-xs text-[#1E1B16]">
-                    <span className="font-extrabold text-[#0B2A4A] block mb-0.5">Reciben:</span>
-                    <p className="text-[#5B6B7A] line-clamp-2">{it.recibe}</p>
-                  </div>
-                )}
-
-                <div className="mt-auto pt-2 border-t border-[#E9E1D2]/60 text-[11px] text-[#7A7264] flex items-center justify-between flex-wrap gap-1">
-                  {it.estado === 'pendiente' ? (
-                    <span className="text-[#856404] font-bold">⏳ Verificación pendiente</span>
-                  ) : (
-                    <span className="text-[#2F8F5B] font-bold flex items-center gap-1">
-                      <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
-                      <span>Verificado por {getVerificadoPorText(it)}</span>
+          {displayedRecords.map((it) => {
+            const textAcopio = normalizeText(`${it.titulo} ${it.recibe} ${it.descripcion} ${it.organizacion} ${it.tipo_espacio}`);
+            const isAlbergue = textAcopio.includes('albergue') || textAcopio.includes('refugio') || textAcopio.includes('hospedaje') || textAcopio.includes('alojamiento') || textAcopio.includes('dormir');
+            return (
+              <div 
+                key={it.id} 
+                className="bg-white rounded-2xl border border-[#E9E1D2] overflow-hidden flex flex-col hover:border-[#1D5DBF] hover:shadow-md transition-all group"
+              >
+                {/* Badge Header Strip */}
+                <div className="bg-[#FAF7F1] border-b border-[#E9E1D2] px-4 py-3 flex items-center justify-between flex-wrap gap-2">
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="bg-white text-[#0B2A4A] border border-[#E9E1D2] font-bold text-[10px] uppercase px-2.5 py-1 rounded-md shadow-2xs">
+                      📍 {it.ciudad}
                     </span>
-                  )}
-                  <span className="font-medium ml-auto">{it.fecha}</span>
+                    <span className={`font-bold text-[10px] uppercase px-2.5 py-1 rounded-md shadow-2xs ${
+                      isAlbergue ? 'bg-[#FBEAE8] text-[#8C2E27] border border-[#F5C2C0]' : 'bg-[#EAF1FB] text-[#1D5DBF] border border-[#C2D8F2]'
+                    }`}>
+                      {isAlbergue ? '⛺ Albergue / Refugio' : '📦 Punto de Acopio'}
+                    </span>
+                  </div>
                 </div>
 
-                <button
-                  onClick={() => onOpenDetail(it)}
-                  className="w-full py-2 px-3 rounded-xl bg-[#FAF7F1] hover:bg-[#FFF6E2] border border-[#E9E1D2] hover:border-[#FFB81C] text-[#0B2A4A] text-xs font-bold transition-colors flex items-center justify-center gap-1.5"
-                >
-                  <span>Ver dirección completa y contacto</span>
-                  <ChevronRight className="w-3.5 h-3.5" />
-                </button>
+                {/* Content */}
+                <div className="p-4 sm:p-5 flex flex-col flex-1 gap-3">
+                  <div className="pt-1">
+                    <h3 className="text-base font-extrabold text-[#1E1B16] leading-snug group-hover:text-[#1D5DBF] transition-colors">
+                      {it.titulo}
+                    </h3>
+                    {it.horario && (
+                      <div className="text-xs font-bold text-[#0B2A4A] mt-1.5 flex items-center gap-1.5">
+                        <Clock className="w-3.5 h-3.5 text-[#1D5DBF] shrink-0" />
+                        <span>{it.horario}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {it.recibe && (
+                    <div className="bg-[#FAF7F1] p-2.5 rounded-xl border border-[#E9E1D2] text-xs text-[#1E1B16]">
+                      <span className="font-extrabold text-[#0B2A4A] block mb-0.5">Reciben:</span>
+                      <p className="text-[#5B6B7A] line-clamp-2">{it.recibe}</p>
+                    </div>
+                  )}
+
+                  {it.descripcion && !it.recibe && (
+                    <p className="text-xs text-[#5B6B7A] line-clamp-3">
+                      {it.descripcion}
+                    </p>
+                  )}
+
+                  <div className="mt-auto pt-3 border-t border-[#E9E1D2]/60 flex items-center justify-between text-[11px] font-bold">
+                    {it.estado === 'pendiente' ? (
+                      <span className="text-[#856404] flex items-center gap-1">
+                        <span>⏳ Verificación pendiente</span>
+                      </span>
+                    ) : (
+                      <span className="text-[#2F8F5B] flex items-center gap-1">
+                        <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
+                        <span className="truncate max-w-[200px]">Verificado por {getVerificadoPorText(it)}</span>
+                      </span>
+                    )}
+                    <span className="text-[#7A7264] font-normal">{formatDisplayDate(it.fecha || it.fecha_hora)}</span>
+                  </div>
+
+                  <button
+                    onClick={() => onOpenDetail(it)}
+                    className="w-full py-2 px-3 rounded-xl bg-[#FAF7F1] hover:bg-[#EAF1FB] border border-[#E9E1D2] hover:border-[#1D5DBF] text-[#0B2A4A] text-xs font-bold transition-colors flex items-center justify-center gap-1.5 mt-1 cursor-pointer"
+                  >
+                    <span>Ver dirección completa y contacto</span>
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
         {renderPagination()}
       </div>
@@ -288,58 +307,70 @@ export const CategoryContent: React.FC<CategoryContentProps> = ({
   if (category === 'necesidades') {
     return (
       <div>
-        <div className="flex flex-col gap-3.5 max-w-4xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {displayedRecords.map((it) => {
-            const isUrgent = it.nivel_urgencia === 'urgent';
+            const isUrgent = it.nivel_urgencia === 'urgent' || it.nivel_urgencia === 'alta';
             return (
               <div 
                 key={it.id} 
-                className={`bg-white rounded-2xl border p-4 sm:p-5 transition-all hover:shadow-md flex flex-wrap sm:flex-nowrap items-start sm:items-center justify-between gap-4 ${
-                  isUrgent 
-                    ? 'border-l-8 border-l-[#C1443B] border-y-[#E9E1D2] border-r-[#E9E1D2]' 
-                    : 'border-l-8 border-l-[#FFB81C] border-y-[#E9E1D2] border-r-[#E9E1D2]'
-                }`}
+                className="bg-white rounded-2xl border border-[#E9E1D2] overflow-hidden flex flex-col hover:border-[#1D5DBF] hover:shadow-md transition-all group"
               >
-                <div className="flex flex-col gap-1.5 flex-1 min-w-[240px]">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className={`text-[10px] font-black uppercase px-2.5 py-1 rounded-md tracking-wider ${
+                {/* Badge Header Strip */}
+                <div className="bg-[#FAF7F1] border-b border-[#E9E1D2] px-4 py-3 flex items-center justify-between flex-wrap gap-2">
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="bg-white text-[#0B2A4A] border border-[#E9E1D2] font-bold text-[10px] uppercase px-2.5 py-1 rounded-md shadow-2xs">
+                      📍 {it.ciudad}
+                    </span>
+                    <span className={`font-extrabold text-[10px] uppercase px-2.5 py-1 rounded-md shadow-2xs ${
                       isUrgent ? 'bg-[#FBEAE8] text-[#8C2E27]' : 'bg-[#FFF6E2] text-[#8A5A00]'
                     }`}>
                       {isUrgent ? '🔴 Urgencia Alta' : '🟡 Urgencia Media'}
                     </span>
-                    <span className="text-[11px] font-bold text-[#0B2A4A] bg-[#FAF7F1] px-2 py-0.5 rounded-md border border-[#E9E1D2]">
-                      📍 {it.ciudad}
-                    </span>
-                  </div>
-
-                  <h3 className="text-base font-extrabold text-[#1E1B16] leading-snug">
-                    {it.titulo}
-                  </h3>
-
-                  <p className="text-xs text-[#5B6B7A] line-clamp-2">
-                    {it.descripcion}
-                  </p>
-
-                  <div className="text-[11px] text-[#7A7264] flex items-center gap-2 flex-wrap mt-1">
-                    {it.fuente && <span className="font-semibold text-[#0B2A4A]">Fuente: {it.fuente}</span>}
-                    {it.fuente && <span>•</span>}
-                    {it.estado === 'pendiente' ? (
-                      <span className="text-[#856404] font-bold">⏳ Verificación pendiente</span>
-                    ) : (
-                      <span>Verificado por: <strong className="text-[#2F8F5B]">{getVerificadoPorText(it)}</strong></span>
-                    )}
-                    {it.fecha_hora && <span>•</span>}
-                    {it.fecha_hora && <span>{it.fecha_hora}</span>}
                   </div>
                 </div>
 
-                <button
-                  onClick={() => onOpenDetail(it)}
-                  className="shrink-0 px-4 py-2.5 rounded-xl bg-[#FAF7F1] hover:bg-[#FBEAE8] border border-[#E9E1D2] hover:border-[#C1443B] text-[#8C2E27] text-xs font-bold transition-colors flex items-center gap-1.5 w-full sm:w-auto justify-center"
-                >
-                  <span>Cómo ayudar</span>
-                  <ChevronRight className="w-3.5 h-3.5" />
-                </button>
+                {/* Content */}
+                <div className="p-4 sm:p-5 flex flex-col flex-1 gap-3">
+                  <div>
+                    <h3 className="text-base font-extrabold text-[#1E1B16] leading-snug group-hover:text-[#1D5DBF] transition-colors">
+                      {it.titulo}
+                    </h3>
+                    {it.fuente && (
+                      <div className="text-xs font-bold text-[#0B2A4A] mt-1 flex items-center gap-1.5">
+                        <Building2 className="w-3.5 h-3.5 text-[#1D5DBF] shrink-0" />
+                        <span>Fuente: {it.fuente}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {it.descripcion && (
+                    <p className="text-xs text-[#5B6B7A] line-clamp-3">
+                      {it.descripcion}
+                    </p>
+                  )}
+
+                  <div className="mt-auto pt-3 border-t border-[#E9E1D2]/60 flex items-center justify-between text-[11px] font-bold">
+                    {it.estado === 'pendiente' ? (
+                      <span className="text-[#856404] flex items-center gap-1">
+                        <span>⏳ Verificación pendiente</span>
+                      </span>
+                    ) : (
+                      <span className="text-[#2F8F5B] flex items-center gap-1">
+                        <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
+                        <span className="truncate max-w-[200px]">Verificado por {getVerificadoPorText(it)}</span>
+                      </span>
+                    )}
+                    <span className="text-[#7A7264] font-normal">{it.fecha_hora || 'Reciente'}</span>
+                  </div>
+
+                  <button
+                    onClick={() => onOpenDetail(it)}
+                    className="w-full py-2 px-3 rounded-xl bg-[#FAF7F1] hover:bg-[#EAF1FB] border border-[#E9E1D2] hover:border-[#1D5DBF] text-[#0B2A4A] text-xs font-bold transition-colors flex items-center justify-center gap-1.5 mt-1 cursor-pointer"
+                  >
+                    <span>Ver cómo ayudar y detalles</span>
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
             );
           })}
@@ -349,7 +380,7 @@ export const CategoryContent: React.FC<CategoryContentProps> = ({
     );
   }
 
-  // 4. INICIATIVAS POR CIUDAD (🏘️)
+  // 4. INICIATIVA Y SERVICIO (🏘️)
   if (category === 'hub') {
     return (
       <div>
@@ -357,32 +388,34 @@ export const CategoryContent: React.FC<CategoryContentProps> = ({
           {displayedRecords.map((it) => (
             <div 
               key={it.id} 
-              className="bg-white rounded-2xl border border-[#E9E1D2] overflow-hidden flex flex-col hover:border-[#0B2A4A] hover:shadow-md transition-all group"
+              className="bg-white rounded-2xl border border-[#E9E1D2] overflow-hidden flex flex-col hover:border-[#1D5DBF] hover:shadow-md transition-all group"
             >
-              {/* Badge Header Strip (No image) */}
-              <div className="bg-[#EAF1FB] border-b border-[#E9E1D2] px-4 py-3 flex items-center justify-between flex-wrap gap-2">
+              {/* Badge Header Strip */}
+              <div className="bg-[#FAF7F1] border-b border-[#E9E1D2] px-4 py-3 flex items-center justify-between flex-wrap gap-2">
                 <div className="flex items-center gap-1.5 flex-wrap">
-                  {it.tipo_iniciativa && (
-                    <span className="bg-[#0B2A4A] text-white font-black text-[10px] tracking-wider uppercase px-2.5 py-1 rounded-md shadow-2xs">
-                      {it.tipo_iniciativa}
-                    </span>
-                  )}
-                  <span className="bg-white text-[#0B2A4A] font-extrabold text-[10px] uppercase px-2 py-1 rounded-md shadow-2xs">
+                  <span className="bg-white text-[#0B2A4A] border border-[#E9E1D2] font-bold text-[10px] uppercase px-2.5 py-1 rounded-md shadow-2xs">
                     📍 {it.ciudad}
                   </span>
+                  {it.tipo_iniciativa && (
+                    <span className="bg-[#EAF1FB] text-[#1D5DBF] font-bold text-[10px] uppercase px-2.5 py-1 rounded-md shadow-2xs">
+                      🤝 {it.tipo_iniciativa}
+                    </span>
+                  )}
                 </div>
               </div>
 
               {/* Content */}
               <div className="p-4 sm:p-5 flex flex-col flex-1 gap-3">
                 <div>
-                  <h3 className="text-base font-extrabold text-[#1E1B16] leading-snug group-hover:text-[#0B2A4A] transition-colors">
+                  <h3 className="text-base font-extrabold text-[#1E1B16] leading-snug group-hover:text-[#1D5DBF] transition-colors">
                     {it.titulo}
                   </h3>
-                  <div className="text-xs font-extrabold text-[#1D5DBF] mt-1 flex items-center gap-1.5">
-                    <Building2 className="w-3.5 h-3.5 shrink-0" />
-                    <span>{it.organizacion} {it.lidera ? `· ${it.lidera}` : ''}</span>
-                  </div>
+                  {it.organizacion && (
+                    <div className="text-xs font-bold text-[#0B2A4A] mt-1 flex items-center gap-1.5">
+                      <Building2 className="w-3.5 h-3.5 text-[#1D5DBF] shrink-0" />
+                      <span>{it.organizacion} {it.lidera ? `· ${it.lidera}` : ''}</span>
+                    </div>
+                  )}
                 </div>
 
                 {it.descripcion && (
@@ -410,21 +443,23 @@ export const CategoryContent: React.FC<CategoryContentProps> = ({
                   </div>
                 )}
 
-                <div className="mt-auto pt-2 border-t border-[#E9E1D2]/60 text-[11px] text-[#7A7264] flex items-center justify-between flex-wrap gap-1">
+                <div className="mt-auto pt-3 border-t border-[#E9E1D2]/60 flex items-center justify-between text-[11px] font-bold">
                   {it.estado === 'pendiente' ? (
-                    <span className="text-[#856404] font-bold">⏳ Verificación pendiente</span>
+                    <span className="text-[#856404] flex items-center gap-1">
+                      <span>⏳ Verificación pendiente</span>
+                    </span>
                   ) : (
-                    <span className="text-[#2F8F5B] font-bold flex items-center gap-1">
+                    <span className="text-[#2F8F5B] flex items-center gap-1">
                       <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
-                      <span>Verificado por {getVerificadoPorText(it)}</span>
+                      <span className="truncate max-w-[200px]">Verificado por {getVerificadoPorText(it)}</span>
                     </span>
                   )}
-                  <span className="font-medium ml-auto">{it.fecha}</span>
+                  <span className="text-[#7A7264] font-normal">{it.fecha || 'Reciente'}</span>
                 </div>
 
                 <button
                   onClick={() => onOpenDetail(it)}
-                  className="w-full py-2 px-3 rounded-xl bg-[#FAF7F1] hover:bg-[#EAF1FB] border border-[#E9E1D2] hover:border-[#1D5DBF] text-[#0B2A4A] text-xs font-bold transition-colors flex items-center justify-center gap-1.5"
+                  className="w-full py-2 px-3 rounded-xl bg-[#FAF7F1] hover:bg-[#EAF1FB] border border-[#E9E1D2] hover:border-[#1D5DBF] text-[#0B2A4A] text-xs font-bold transition-colors flex items-center justify-center gap-1.5 mt-1 cursor-pointer"
                 >
                   <span>Ver detalles de iniciativa</span>
                   <ChevronRight className="w-3.5 h-3.5" />
@@ -451,23 +486,12 @@ export const CategoryContent: React.FC<CategoryContentProps> = ({
               {/* Badge Header Strip */}
               <div className="bg-[#FAF7F1] border-b border-[#E9E1D2] px-4 py-3 flex items-center justify-between flex-wrap gap-2">
                 <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className={`font-black text-[10px] uppercase px-2.5 py-1 rounded-md shadow-2xs ${
-                    it.tipo_buscar === 'Mascotas' ? 'bg-[#FFF6E2] text-[#8A5A00]' : 'bg-[#EAF1FB] text-[#1D5DBF]'
-                  }`}>
-                    {it.tipo_buscar === 'Mascotas' ? '🐾 Mascotas' : '👤 Personas'}
-                  </span>
-                  <span className="bg-white text-[#7A7264] border border-[#E9E1D2] font-bold text-[10px] uppercase px-2 py-1 rounded-md shadow-2xs">
+                  <span className="bg-white text-[#0B2A4A] border border-[#E9E1D2] font-bold text-[10px] uppercase px-2.5 py-1 rounded-md shadow-2xs">
                     📍 {it.ciudad}
                   </span>
-                  {it.estado === 'pendiente' ? (
-                    <span className="bg-[#FFF3CD] text-[#856404] border border-[#FFEEBA] font-extrabold text-[10px] uppercase px-2 py-1 rounded-md shadow-2xs">
-                      ⏳ Verificación pendiente
-                    </span>
-                  ) : (
-                    <span className="bg-[#E6F4EA] text-[#137333] border border-[#CEEAD6] font-bold text-[10px] uppercase px-2 py-1 rounded-md shadow-2xs">
-                      ✓ Verificado
-                    </span>
-                  )}
+                  <span className="bg-[#EAF1FB] text-[#1D5DBF] font-bold text-[10px] uppercase px-2.5 py-1 rounded-md shadow-2xs">
+                    {it.tipo_buscar === 'Mascotas' ? '🐾 Mascotas' : '👤 Personas'}
+                  </span>
                 </div>
               </div>
 
@@ -475,11 +499,12 @@ export const CategoryContent: React.FC<CategoryContentProps> = ({
               <div className="p-4 sm:p-5 flex flex-col flex-1 gap-3">
                 <div>
                   <h3 className="text-base font-extrabold text-[#1E1B16] leading-snug group-hover:text-[#1D5DBF] transition-colors">
-                    {it.titulo}
+                    {it.nombre || it.titulo}
                   </h3>
                   {it.organizacion && (
-                    <div className="text-xs font-bold text-[#1D5DBF] mt-1 flex items-center gap-1">
-                      <span>Organiza: {it.organizacion}</span>
+                    <div className="text-xs font-bold text-[#0B2A4A] mt-1 flex items-center gap-1.5">
+                      <Building2 className="w-3.5 h-3.5 text-[#1D5DBF] shrink-0" />
+                      <span>{it.organizacion}</span>
                     </div>
                   )}
                 </div>
@@ -507,16 +532,18 @@ export const CategoryContent: React.FC<CategoryContentProps> = ({
                   </div>
                 )}
 
-                <div className="mt-auto pt-3 border-t border-[#E9E1D2]/60 flex items-center justify-between text-[11px] text-[#7A7264] font-medium">
+                <div className="mt-auto pt-3 border-t border-[#E9E1D2]/60 flex items-center justify-between text-[11px] font-bold">
                   {it.estado === 'pendiente' ? (
-                    <span className="text-[#856404] font-bold">⏳ Pendiente de verificación</span>
+                    <span className="text-[#856404] flex items-center gap-1">
+                      <span>⏳ Verificación pendiente</span>
+                    </span>
                   ) : (
-                    <span className="text-[#2F8F5B] font-bold flex items-center gap-1">
+                    <span className="text-[#2F8F5B] flex items-center gap-1">
                       <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
-                      <span>Verificado por {getVerificadoPorText(it)}</span>
+                      <span className="truncate max-w-[200px]">Verificado por {getVerificadoPorText(it)}</span>
                     </span>
                   )}
-                  <span>{it.fecha || 'Reciente'}</span>
+                  <span className="text-[#7A7264] font-normal">{it.fecha || 'Reciente'}</span>
                 </div>
 
                 <button
