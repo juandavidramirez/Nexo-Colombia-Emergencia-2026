@@ -16,12 +16,6 @@ export const Hero: React.FC<HeroProps> = ({ onScrollToTabs, onOpenShareModal }) 
         
         {/* TOP SECTION: Hero Headline, Description & Action Buttons */}
         <div>
-          {/* Eyebrow */}
-          <div className="inline-flex items-center gap-2 text-xs font-bold text-[#7A7264] mb-3.5 bg-[#FAF7F1] border border-[#E9E1D2] px-3.5 py-1.5 rounded-full">
-            <span className="w-2 h-2 rounded-full bg-[#2F8F5B] shrink-0 animate-pulse"></span>
-            <span>Iniciativa ciudadana · Global Shapers Colombia y Venezuela</span>
-          </div>
-
           {/* Main Headline */}
           <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-[#0B2A4A] tracking-tight leading-[1.12] mb-4">
             Conectemos cada ayuda con quien la necesita.
@@ -49,8 +43,16 @@ export const Hero: React.FC<HeroProps> = ({ onScrollToTabs, onOpenShareModal }) 
               <PlusCircle className="w-4 h-4 text-white" />
               <span>Comparte información</span>
             </button>
+          </div>
 
-            <div className="hidden sm:flex items-center gap-1.5 text-xs text-[#7A7264] font-medium ml-auto">
+          {/* Sub-label metadata underneath buttons */}
+          <div className="mt-5 pt-4.5 border-t border-[#E9E1D2]/40 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-[#7A7264] font-bold">
+            <div className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-[#2F8F5B] shrink-0 animate-pulse" />
+              <span>Iniciativa ciudadana · Global Shapers Colombia y Venezuela</span>
+            </div>
+            <div className="hidden sm:inline text-[#E9E1D2]">|</div>
+            <div className="flex items-center gap-1.5">
               <ShieldCheck className="w-4 h-4 text-[#2F8F5B]" />
               <span>Revisado por voluntarios</span>
             </div>

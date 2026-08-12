@@ -25,43 +25,62 @@ interface DashboardMetricsProps {
  */
 export const EmergencyBalanceBanner: React.FC<{ balance: EmergencyBalance }> = ({ balance }) => {
   return (
-    <div className="bg-[#FFF6E2] rounded-2xl border border-[#FFB81C] p-4 sm:p-5 shadow-2xs flex flex-col lg:flex-row lg:items-center justify-between gap-3.5">
-      {/* Header */}
-      <div className="flex items-center gap-2.5 min-w-0 lg:max-w-[40%] shrink-0">
-        <div className="p-2 rounded-xl bg-[#FFB81C]/30 text-[#8A5A00] shrink-0">
+    <div className="bg-white rounded-2xl border border-[#FFB81C] p-3 sm:p-4 shadow-2xs flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+      {/* Header (Cohesive with other platform cards, with a hint of warm brand styling) */}
+      <div className="flex items-center gap-2.5 lg:max-w-[35%] shrink-0">
+        <div className="p-1.5 sm:p-2 rounded-xl bg-[#FFF6E2] border border-[#FFB81C]/40 text-[#8A5A00] shrink-0">
           <ShieldAlert className="w-4 h-4 sm:w-5 sm:h-5" />
         </div>
         <div className="min-w-0">
-          <h3 className="text-xs sm:text-sm font-black text-[#5C3C00] uppercase tracking-wider leading-none truncate">
+          <h3 className="text-xs sm:text-sm font-black text-[#0B2A4A] uppercase tracking-wider leading-tight">
             Balance oficial de la emergencia
           </h3>
-          <p className="text-[11px] sm:text-xs text-[#8A5A00]/90 font-bold mt-1 leading-snug truncate">
+          <p className="text-[10px] sm:text-xs text-[#7A7264] font-semibold mt-0.5 leading-tight">
             {balance.fuente} · {balance.actualizado}
           </p>
         </div>
       </div>
 
-      {/* 4 Indicator Scorecards spanning full width proportionately */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2.5 w-full lg:flex-1 lg:max-w-[60%]">
-        <div className="bg-white/90 border border-[#FFB81C]/40 px-2.5 py-2 sm:py-2.5 rounded-xl flex items-center justify-center gap-1.5 min-w-0 shadow-2xs w-full text-center">
-          <span className="text-sm sm:text-base lg:text-lg font-black text-[#5C3C00] leading-none shrink-0">{balance.muertos}</span>
-          <span className="text-xs font-bold text-[#5C3C00] truncate">Fallecidos</span>
+      {/* 4 Indicator Scorecards styled in exact harmony with PlatformMobilizationMetrics */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 flex-1">
+        <div className="bg-[#FAF7F1] border border-[#E9E1D2] px-2.5 py-1.5 rounded-xl flex items-center justify-between gap-1.5 min-w-0 shadow-3xs w-full">
+          <span className="text-[10px] sm:text-xs font-bold text-[#5B6B7A] truncate text-left">
+            Fallecidos
+          </span>
+          <span className="text-xs sm:text-sm font-black text-[#C1443B] shrink-0 bg-white px-2 py-0.5 rounded-lg border border-[#E9E1D2]/80">
+            {balance.muertos}
+          </span>
         </div>
 
-        <div className="bg-white/90 border border-[#FFB81C]/40 px-2.5 py-2 sm:py-2.5 rounded-xl flex items-center justify-center gap-1.5 min-w-0 shadow-2xs w-full text-center">
-          <span className="text-sm sm:text-base lg:text-lg font-black text-[#5C3C00] leading-none shrink-0">{balance.heridos}</span>
-          <span className="text-xs font-bold text-[#5C3C00] truncate">Heridos</span>
+        <div className="bg-[#FAF7F1] border border-[#E9E1D2] px-2.5 py-1.5 rounded-xl flex items-center justify-between gap-1.5 min-w-0 shadow-3xs w-full">
+          <span className="text-[10px] sm:text-xs font-bold text-[#5B6B7A] truncate text-left">
+            Heridos
+          </span>
+          <span className="text-xs sm:text-sm font-black text-[#8A5A00] shrink-0 bg-white px-2 py-0.5 rounded-lg border border-[#E9E1D2]/80">
+            {balance.heridos}
+          </span>
         </div>
 
-        <div className="bg-white/90 border border-[#FFB81C]/40 px-2.5 py-2 sm:py-2.5 rounded-xl flex items-center justify-center gap-1.5 min-w-0 shadow-2xs w-full text-center">
-          <span className="text-sm sm:text-base lg:text-lg font-black text-[#5C3C00] leading-none shrink-0">{balance.desaparecidos}</span>
-          <span className="text-xs font-bold text-[#5C3C00] truncate">Desaparecidos</span>
+        <div className="bg-[#FAF7F1] border border-[#E9E1D2] px-2.5 py-1.5 rounded-xl flex items-center justify-between gap-1.5 min-w-0 shadow-3xs w-full">
+          <span className="text-[10px] sm:text-xs font-bold text-[#5B6B7A] truncate text-left">
+            Desaparecidos
+          </span>
+          <span className="text-xs sm:text-sm font-black text-[#7A7264] shrink-0 bg-white px-2 py-0.5 rounded-lg border border-[#E9E1D2]/80">
+            {balance.desaparecidos}
+          </span>
         </div>
 
-        <div className="bg-[#E7F4EC] border border-[#2F8F5B] px-2.5 py-2 sm:py-2.5 rounded-xl flex items-center justify-center gap-1.5 min-w-0 shadow-2xs w-full text-center">
-          <span className="text-sm sm:text-base lg:text-lg font-black text-[#1E5C3A] leading-none shrink-0">{balance.encontrados_con_vida}</span>
-          <span className="text-xs font-extrabold text-[#1E5C3A] truncate">Con vida</span>
-          <Sparkles className="w-3.5 h-3.5 text-[#2F8F5B] animate-pulse shrink-0 hidden sm:inline-block" />
+        {/* Highlighted in Blue for brand identity instead of green */}
+        <div className="bg-[#EAF1FB] border border-[#1D5DBF]/40 px-2.5 py-1.5 rounded-xl flex items-center justify-between gap-1.5 min-w-0 shadow-3xs w-full">
+          <div className="flex items-center gap-1 min-w-0">
+            <span className="text-[10px] sm:text-xs font-extrabold text-[#1D5DBF] truncate text-left">
+              Con vida
+            </span>
+            <Sparkles className="w-3 h-3 text-[#1D5DBF] animate-pulse shrink-0 hidden sm:inline-block" />
+          </div>
+          <span className="text-xs sm:text-sm font-black text-[#1D5DBF] shrink-0 bg-white px-2 py-0.5 rounded-lg border border-[#1D5DBF]/30">
+            {balance.encontrados_con_vida}
+          </span>
         </div>
       </div>
     </div>

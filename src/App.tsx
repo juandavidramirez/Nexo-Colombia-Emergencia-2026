@@ -11,6 +11,7 @@ import { ShareModal } from './components/ShareModal';
 import { ContactModal } from './components/ContactModal';
 import { ReportFormModal } from './components/ReportFormModal';
 import { QuienesSomosView } from './components/QuienesSomosView';
+import { HowItWorksModal } from './components/HowItWorksModal';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<ViewPage>('home');
@@ -36,6 +37,7 @@ export default function App() {
   const [isShareModalOpen, setIsShareModalOpen] = useState<boolean>(false);
   const [isContactModalOpen, setIsContactModalOpen] = useState<boolean>(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState<boolean>(false);
+  const [isHowItWorksOpen, setIsHowItWorksOpen] = useState<boolean>(false);
 
   // Filtered records (Inclusive multi-condition AND filtering)
   const currentRecords = useMemo(() => {
@@ -88,6 +90,7 @@ export default function App() {
         onOpenContactModal={() => setIsContactModalOpen(true)}
         onOpenShareModal={() => setIsReportModalOpen(true)}
         onOpenReportModal={() => setIsReportModalOpen(true)}
+        onOpenHowItWorksModal={() => setIsHowItWorksOpen(true)}
       />
 
       {/* Page Routing */}
@@ -205,6 +208,12 @@ export default function App() {
         onClose={() => setIsReportModalOpen(false)}
         initialCategory={activeCategory}
         onRecordCreated={() => setDataVersion((v) => v + 1)}
+      />
+
+      {/* How it works Information Modal */}
+      <HowItWorksModal
+        isOpen={isHowItWorksOpen}
+        onClose={() => setIsHowItWorksOpen(false)}
       />
     </div>
   );
