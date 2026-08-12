@@ -28,6 +28,7 @@ interface ReportFormModalProps {
   onClose: () => void;
   initialCategory?: CategoryType;
   onRecordCreated?: () => void;
+  onShowToast?: (message: string) => void;
 }
 
 const CATEGORY_OPTIONS: { 
@@ -84,7 +85,8 @@ export const ReportFormModal: React.FC<ReportFormModalProps> = ({
   isOpen,
   onClose,
   initialCategory,
-  onRecordCreated
+  onRecordCreated,
+  onShowToast
 }) => {
   // Step State: null = Step 1 (Select Type), CategoryType = Step 2 (Form Questions)
   const [selectedCategory, setSelectedCategory] = useState<CategoryType | null>(null);
@@ -352,11 +354,17 @@ export const ReportFormModal: React.FC<ReportFormModalProps> = ({
       }
     }
 
+    const successToastMessage = 'El registro quedó adicionado y estará en proceso de verificación.';
+
     setIsSubmitting(false);
     setStatusMessage({
       type: 'success',
-      text: 'Gracias, la información ya ha sido registrada en nuestra base de datos.'
+      text: successToastMessage
     });
+
+    if (onShowToast) {
+      onShowToast(successToastMessage);
+    }
 
     if (onRecordCreated) {
       onRecordCreated();
@@ -1248,6 +1256,28 @@ export const ReportFormModal: React.FC<ReportFormModalProps> = ({
           )}
         </div>
       </div>
+
+      {/* Floating Bottom Toast Popup - Visible without scrolling */}
+      {statusMessage && statusMessage.type === 'success' && (
+        <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-[10000] px-4 w-full max-w-md pointer-events-none animate-fadeIn">
+          <div className="bg-[#0B2A4A] text-white p-4 rounded-2xl shadow-2xl border border-[#10B981]/50 flex items-center gap-3.5 pointer-events-auto backdrop-blur-md">
+            <div className="p-2 bg-[#10B981]/20 rounded-xl text-[#10B981] shrink-0">
+              <CheckCircle2 className="w-5 h-5" />
+            </div>
+            <div className="flex-1 text-xs sm:text-sm font-bold leading-snug text-white">
+              {statusMessage.text}
+            </div>
+            <button
+              type="button"
+              onClick={() => setStatusMessage(null)}
+              className="p-1.5 text-white/70 hover:text-white hover:bg-white/10 rounded-full transition-colors cursor-pointer shrink-0"
+              title="Cerrar notificación"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { CheckCircle2, X } from 'lucide-react';
 import { CategoryType, ViewPage, EmergencyRecord } from './types';
 import { dataService } from './services/dataService';
 import { Navbar } from './components/Navbar';
@@ -33,7 +34,15 @@ export default function App() {
     return unsubscribe;
   }, []);
 
-  // Modals
+  // Toast Notification
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const handleShowToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => {
+      setToastMessage(null);
+    }, 5000);
+  };
   const [selectedRecord, setSelectedRecord] = useState<EmergencyRecord | null>(null);
   const [isShareModalOpen, setIsShareModalOpen] = useState<boolean>(false);
   const [isContactModalOpen, setIsContactModalOpen] = useState<boolean>(false);
@@ -227,6 +236,7 @@ export default function App() {
         onClose={() => setIsReportModalOpen(false)}
         initialCategory={activeCategory}
         onRecordCreated={() => setDataVersion((v) => v + 1)}
+        onShowToast={handleShowToast}
       />
 
       {/* How it works Information Modal */}
@@ -234,6 +244,28 @@ export default function App() {
         isOpen={isHowItWorksOpen}
         onClose={() => setIsHowItWorksOpen(false)}
       />
+
+      {/* Global Toast Notification Popup */}
+      {toastMessage && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[10000] px-4 w-full max-w-md pointer-events-none animate-fadeIn">
+          <div className="bg-[#0B2A4A] text-white p-4 rounded-2xl shadow-2xl border border-[#10B981]/50 flex items-center gap-3.5 pointer-events-auto backdrop-blur-md">
+            <div className="p-2 bg-[#10B981]/20 rounded-xl text-[#10B981] shrink-0">
+              <CheckCircle2 className="w-5 h-5" />
+            </div>
+            <div className="flex-1 text-xs sm:text-sm font-bold leading-snug text-white">
+              {toastMessage}
+            </div>
+            <button
+              type="button"
+              onClick={() => setToastMessage(null)}
+              className="p-1.5 text-white/70 hover:text-white hover:bg-white/10 rounded-full transition-colors cursor-pointer shrink-0"
+              title="Cerrar notificación"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
