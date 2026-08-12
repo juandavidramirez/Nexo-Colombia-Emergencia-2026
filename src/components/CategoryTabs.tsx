@@ -227,14 +227,20 @@ export const CategoryTabs: React.FC<CategoryTabsProps> = ({
           <div className="flex flex-wrap items-center gap-2 shrink-0">
             {/* Filter 1: Common City Selector Dropdown */}
             <div className="relative inline-flex items-center flex-1 sm:flex-initial">
-              <MapPin className="w-3.5 h-3.5 absolute left-3 text-[#1D5DBF] pointer-events-none" />
+              <MapPin className={`w-3.5 h-3.5 absolute left-3 pointer-events-none ${
+                selectedCity !== 'Todas' ? 'text-white' : 'text-[#0B2A4A]'
+              }`} />
               <select
                 value={selectedCity}
                 onChange={(e) => onSelectCity(e.target.value)}
-                className="w-full sm:w-auto pl-8 pr-7 py-1.5 text-xs font-bold bg-[#EAF1FB] border border-[#1D5DBF]/30 text-[#0B2A4A] rounded-xl cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#1D5DBF] hover:bg-[#d8e7fa] transition-colors truncate max-w-[180px]"
+                className={`w-full sm:w-auto pl-8 pr-7 py-1.5 text-xs font-bold rounded-xl cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#0B2A4A] transition-colors border truncate max-w-[180px] ${
+                  selectedCity !== 'Todas'
+                    ? 'bg-[#0B2A4A] text-white border-[#0B2A4A]'
+                    : 'bg-[#FAF7F1] border-[#E9E1D2] text-[#0B2A4A] hover:bg-[#EAF1FB]'
+                }`}
               >
                 {CITIES_LIST.map((c) => (
-                  <option key={c} value={c}>
+                  <option key={c} value={c} className="bg-white text-[#0B2A4A]">
                     {c === 'Todas' ? '📍 Ciudad: (Todas)' : `📍 ${c}`}
                   </option>
                 ))}

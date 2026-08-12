@@ -129,8 +129,18 @@ export const QuienesSomosView: React.FC<QuienesSomosViewProps> = ({
                       Actualmente no tenemos Hub activo en Chocó, pero pronto tendremos un punto de contacto.
                     </div>
                   ) : (
-                    <div className="text-xs sm:text-sm text-[#7A7264] mt-0.5 leading-normal">
-                      <span className="font-bold text-[#0B2A4A]">Líder:</span> {h.persona}
+                    <div className="text-xs sm:text-sm text-[#7A7264] mt-0.5 leading-normal flex flex-wrap items-center gap-1.5">
+                      <div>
+                        <span className="font-bold text-[#0B2A4A]">Líder:</span> {h.persona}
+                      </div>
+                      {h.id === 'hub-medellin' && (
+                        <>
+                          <span className="text-[#E9E1D2] hidden sm:inline">•</span>
+                          <div>
+                            <span className="font-bold text-[#0B2A4A]">Alumna:</span> Andrea Ramírez
+                          </div>
+                        </>
+                      )}
                     </div>
                   )}
                 </div>

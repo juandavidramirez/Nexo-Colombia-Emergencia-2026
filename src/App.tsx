@@ -171,10 +171,10 @@ export default function App() {
 
               <div className="mt-8 pt-6 border-t border-[#E9E1D2]/60 text-xs text-[#7A7264] flex flex-col items-center justify-center gap-1 text-center">
                 <div>
-                  Iniciativa impulsada por <strong className="text-[#0B2A4A]">Global Shapers Colombia y Venezuela</strong>
+                  Iniciativa impulsada y respaldada por los <strong className="text-[#0B2A4A]">Global Shapers de Colombia y Venezuela</strong>
                 </div>
                 <div className="text-[11px] text-[#7A7264]">
-                  Nexo fue creado por <strong className="text-[#0B2A4A]">Juan David Ramírez</strong>
+                  Nexo fue diseñada y desarrollada por <strong className="text-[#0B2A4A]">Juan David Ramírez</strong>
                 </div>
               </div>
             </div>

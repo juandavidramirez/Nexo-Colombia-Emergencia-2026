@@ -49,7 +49,7 @@ export const Hero: React.FC<HeroProps> = ({ onScrollToTabs, onOpenShareModal }) 
           <div className="mt-5 pt-4.5 border-t border-[#E9E1D2]/40 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-[#7A7264] font-bold">
             <div className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-[#2F8F5B] shrink-0 animate-pulse" />
-              <span>Iniciativa ciudadana · Global Shapers Colombia y Venezuela</span>
+              <span>Iniciativa impulsada y respaldada por los Global Shapers de Colombia y Venezuela</span>
             </div>
             <div className="hidden sm:inline text-[#E9E1D2]">|</div>
             <div className="flex items-center gap-1.5">

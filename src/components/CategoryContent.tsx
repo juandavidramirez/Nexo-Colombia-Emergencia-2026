@@ -144,7 +144,7 @@ export const CategoryContent: React.FC<CategoryContentProps> = ({
                     📍 {it.ciudad}
                   </span>
                   {it.tipo_transferencia && (
-                    <span className="bg-[#EAF1FB] text-[#1D5DBF] font-bold text-[10px] uppercase px-2.5 py-1 rounded-md shadow-2xs">
+                    <span className="bg-[#FFF6E2] text-[#8A5A00] border border-[#F5E1B5] font-bold text-[10px] uppercase px-2.5 py-1 rounded-md shadow-2xs">
                       💳 {it.tipo_transferencia}
                     </span>
                   )}
@@ -238,7 +238,7 @@ export const CategoryContent: React.FC<CategoryContentProps> = ({
                       📍 {it.ciudad}
                     </span>
                     <span className={`font-bold text-[10px] uppercase px-2.5 py-1 rounded-md shadow-2xs ${
-                      isAlbergue ? 'bg-[#FBEAE8] text-[#8C2E27] border border-[#F5C2C0]' : 'bg-[#EAF1FB] text-[#1D5DBF] border border-[#C2D8F2]'
+                      isAlbergue ? 'bg-[#FBEAE8] text-[#8C2E27] border border-[#F5C2C0]' : 'bg-[#FFF6E2] text-[#8A5A00] border border-[#F5E1B5]'
                     }`}>
                       {isAlbergue ? '⛺ Albergue / Refugio' : '📦 Punto de Acopio'}
                     </span>
@@ -397,7 +397,7 @@ export const CategoryContent: React.FC<CategoryContentProps> = ({
                     📍 {it.ciudad}
                   </span>
                   {it.tipo_iniciativa && (
-                    <span className="bg-[#EAF1FB] text-[#1D5DBF] font-bold text-[10px] uppercase px-2.5 py-1 rounded-md shadow-2xs">
+                    <span className="bg-[#FFF6E2] text-[#8A5A00] border border-[#F5E1B5] font-bold text-[10px] uppercase px-2.5 py-1 rounded-md shadow-2xs">
                       🤝 {it.tipo_iniciativa}
                     </span>
                   )}
@@ -489,7 +489,7 @@ export const CategoryContent: React.FC<CategoryContentProps> = ({
                   <span className="bg-white text-[#0B2A4A] border border-[#E9E1D2] font-bold text-[10px] uppercase px-2.5 py-1 rounded-md shadow-2xs">
                     📍 {it.ciudad}
                   </span>
-                  <span className="bg-[#EAF1FB] text-[#1D5DBF] font-bold text-[10px] uppercase px-2.5 py-1 rounded-md shadow-2xs">
+                  <span className="bg-[#FFF6E2] text-[#8A5A00] border border-[#F5E1B5] font-bold text-[10px] uppercase px-2.5 py-1 rounded-md shadow-2xs">
                     {it.tipo_buscar === 'Mascotas' ? '🐾 Mascotas' : '👤 Personas'}
                   </span>
                 </div>

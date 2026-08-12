@@ -368,7 +368,7 @@ export const ReportFormModal: React.FC<ReportFormModalProps> = ({
 
           <div className="flex items-center gap-2 mb-1.5 text-[#FFB81C] text-xs font-black uppercase tracking-wider">
             <HeartHandshake className="w-4 h-4" />
-            <span>Aporte Ciudadano Collaborativo</span>
+            <span>Aporte Ciudadano</span>
           </div>
 
           <h2 className="text-xl sm:text-2xl font-black tracking-tight text-white">
