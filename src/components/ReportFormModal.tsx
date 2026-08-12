@@ -6,16 +6,21 @@ import { appendRecordToGoogleSheet, getStoredSheetId } from '../services/googleS
 import { insertRecordToSupabase } from '../services/supabaseService';
 
 const DICTIONARY_CITIES = [
-  'Manizales',
-  'Quibdó',
-  'Armenia',
-  'Pereira',
-  'Cali',
-  'Medellín',
+  'Riohacha',
+  'Cartagena',
+  'Santa Marta',
   'Bogotá',
-  'Chocó (Otras zonas)',
-  'Otras partes del país',
-  'Nacional'
+  'Medellín',
+  'Manizales',
+  'Armenia',
+  'Cali',
+  'Pereira',
+  'Barranquilla',
+  'Quibdó',
+  'Chocó (otras zonas)',
+  'Nacional',
+  'Internacional',
+  'Otra'
 ];
 
 interface ReportFormModalProps {
@@ -85,7 +90,8 @@ export const ReportFormModal: React.FC<ReportFormModalProps> = ({
   const [selectedCategory, setSelectedCategory] = useState<CategoryType | null>(null);
 
   // Common Form Fields
-  const [ciudad, setCiudad] = useState<string>('Manizales');
+  const [ciudad, setCiudad] = useState<string>('Riohacha');
+  const [ciudadManual, setCiudadManual] = useState<string>('');
   const [organizacion, setOrganizacion] = useState<string>('');
   const [titulo, setTitulo] = useState<string>('');
   const [descripcion, setDescripcion] = useState<string>('');
@@ -135,7 +141,8 @@ export const ReportFormModal: React.FC<ReportFormModalProps> = ({
   if (!isOpen) return null;
 
   function resetFormFields() {
-    setCiudad('Manizales');
+    setCiudad('Riohacha');
+    setCiudadManual('');
     setOrganizacion('');
     setTitulo('');
     setDescripcion('');
@@ -174,12 +181,21 @@ export const ReportFormModal: React.FC<ReportFormModalProps> = ({
     e.preventDefault();
     if (!selectedCategory) return;
 
+    if ((ciudad === 'Internacional' || ciudad === 'Otra') && !ciudadManual.trim()) {
+      setStatusMessage({ type: 'error', text: 'Por favor especifica la ciudad o país.' });
+      return;
+    }
+
+    const finalCiudad = (ciudad === 'Internacional' || ciudad === 'Otra')
+      ? ciudadManual.trim()
+      : ciudad;
+
     setIsSubmitting(true);
     setStatusMessage(null);
 
     let recordPayload: Partial<EmergencyRecord> & { categoria: CategoryType; donacion_metodo?: 'cuenta' | 'link' } = {
       categoria: selectedCategory,
-      ciudad: ciudad || 'Nacional',
+      ciudad: finalCiudad || 'Nacional',
       confirmado_por: '',
       estado: 'aprobado',
       fecha: 'Hace un momento',
@@ -211,8 +227,8 @@ export const ReportFormModal: React.FC<ReportFormModalProps> = ({
         banco: banco.trim(),
         tipo_cuenta: tipoCuenta,
         numero_cuenta: numeroCuenta.trim(),
-        ciudad_cobertura: ciudad,
-        ciudad: ciudad,
+        ciudad_cobertura: finalCiudad,
+        ciudad: finalCiudad,
         tipo_transferencia: tipoTransferencia,
         contacto_seguimiento: contacto.trim(),
         contacto: contacto.trim(),
@@ -223,14 +239,14 @@ export const ReportFormModal: React.FC<ReportFormModalProps> = ({
         donacion_metodo: donacionMetodo
       };
     } else if (selectedCategory === 'acopio') {
-      if (!ciudad || !titulo.trim() || !direccion.trim()) {
+      if (!finalCiudad || !titulo.trim() || !direccion.trim()) {
         setStatusMessage({ type: 'error', text: 'Por favor completa los campos obligatorios (*): Ciudad, Nombre del punto y Dirección.' });
         setIsSubmitting(false);
         return;
       }
       recordPayload = {
         ...recordPayload,
-        ciudad: ciudad,
+        ciudad: finalCiudad,
         titulo: titulo.trim(),
         direccion: direccion.trim(),
         Tipo: tipoEspacio,
@@ -246,14 +262,14 @@ export const ReportFormModal: React.FC<ReportFormModalProps> = ({
         fuente: 'Formulario público'
       };
     } else if (selectedCategory === 'necesidades') {
-      if (!ciudad || !titulo.trim() || !descripcion.trim()) {
+      if (!finalCiudad || !titulo.trim() || !descripcion.trim()) {
         setStatusMessage({ type: 'error', text: 'Por favor completa los campos obligatorios (*): Ciudad, Título y Descripción.' });
         setIsSubmitting(false);
         return;
       }
       recordPayload = {
         ...recordPayload,
-        ciudad: ciudad,
+        ciudad: finalCiudad,
         titulo: titulo.trim(),
         descripcion: descripcion.trim(),
         nivel_urgencia: nivelUrgencia as any,
@@ -263,14 +279,14 @@ export const ReportFormModal: React.FC<ReportFormModalProps> = ({
         fuente: fuente.trim() || 'Formulario público'
       };
     } else if (selectedCategory === 'hub') {
-      if (!ciudad.trim() || !titulo.trim() || !organizacion.trim() || !descripcion.trim()) {
+      if (!finalCiudad.trim() || !titulo.trim() || !organizacion.trim() || !descripcion.trim()) {
         setStatusMessage({ type: 'error', text: 'Por favor completa los campos obligatorios (*): Ciudad, Título de la iniciativa o servicio, Organización y Descripción.' });
         setIsSubmitting(false);
         return;
       }
       recordPayload = {
         ...recordPayload,
-        ciudad: ciudad.trim(),
+        ciudad: finalCiudad.trim(),
         titulo: titulo.trim(),
         organizacion: organizacion.trim(),
         lidera: lidera.trim(),
@@ -291,7 +307,7 @@ export const ReportFormModal: React.FC<ReportFormModalProps> = ({
       }
       recordPayload = {
         ...recordPayload,
-        ciudad: ciudad || 'Nacional',
+        ciudad: finalCiudad || 'Nacional',
         tipo: tipoBuscar,
         tipo_buscar: tipoBuscar,
         nombre: titulo.trim(),
@@ -339,7 +355,7 @@ export const ReportFormModal: React.FC<ReportFormModalProps> = ({
     setIsSubmitting(false);
     setStatusMessage({
       type: 'success',
-      text: `¡Muchas gracias! Tu información se ha registrado con éxito. ${supabaseStatus}`
+      text: 'Gracias, la información ya ha sido registrada en nuestra base de datos.'
     });
 
     if (onRecordCreated) {
@@ -490,6 +506,21 @@ export const ReportFormModal: React.FC<ReportFormModalProps> = ({
                           <option key={c} value={c}>{c}</option>
                         ))}
                       </select>
+                      {(ciudad === 'Internacional' || ciudad === 'Otra') && (
+                        <div className="mt-2">
+                          <label className="block text-[10px] font-black text-[#7A7264] mb-0.5">
+                            Especifica la ciudad / cobertura *
+                          </label>
+                          <input
+                            type="text"
+                            value={ciudadManual}
+                            onChange={(e) => setCiudadManual(e.target.value)}
+                            placeholder={ciudad === 'Internacional' ? 'Ej. Madrid, Caracas, Miami' : 'Ej. Bucaramanga, Ibagué, Pasto'}
+                            required
+                            className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-[#E9E1D2] bg-[#FAF7F1] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#1D5DBF]"
+                          />
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -659,6 +690,21 @@ export const ReportFormModal: React.FC<ReportFormModalProps> = ({
                           <option key={c} value={c}>{c}</option>
                         ))}
                       </select>
+                      {(ciudad === 'Internacional' || ciudad === 'Otra') && (
+                        <div className="mt-2">
+                          <label className="block text-[10px] font-black text-[#7A7264] mb-0.5">
+                            Especifica la ciudad / municipio *
+                          </label>
+                          <input
+                            type="text"
+                            value={ciudadManual}
+                            onChange={(e) => setCiudadManual(e.target.value)}
+                            placeholder={ciudad === 'Internacional' ? 'Ej. Madrid, Caracas, Miami' : 'Ej. Bucaramanga, Ibagué, Pasto'}
+                            required
+                            className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-[#E9E1D2] bg-[#FAF7F1] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#1D5DBF]"
+                          />
+                        </div>
+                      )}
                     </div>
 
                     <div>
@@ -794,6 +840,21 @@ export const ReportFormModal: React.FC<ReportFormModalProps> = ({
                           <option key={c} value={c}>{c}</option>
                         ))}
                       </select>
+                      {(ciudad === 'Internacional' || ciudad === 'Otra') && (
+                        <div className="mt-2">
+                          <label className="block text-[10px] font-black text-[#7A7264] mb-0.5">
+                            Especifica la ciudad / municipio *
+                          </label>
+                          <input
+                            type="text"
+                            value={ciudadManual}
+                            onChange={(e) => setCiudadManual(e.target.value)}
+                            placeholder={ciudad === 'Internacional' ? 'Ej. Madrid, Caracas, Miami' : 'Ej. Bucaramanga, Ibagué, Pasto'}
+                            required
+                            className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-[#E9E1D2] bg-[#FAF7F1] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#1D5DBF]"
+                          />
+                        </div>
+                      )}
                     </div>
 
                     <div>
@@ -888,6 +949,21 @@ export const ReportFormModal: React.FC<ReportFormModalProps> = ({
                           <option key={c} value={c}>{c}</option>
                         ))}
                       </select>
+                      {(ciudad === 'Internacional' || ciudad === 'Otra') && (
+                        <div className="mt-2">
+                          <label className="block text-[10px] font-black text-[#7A7264] mb-0.5">
+                            Especifica la ciudad / cobertura *
+                          </label>
+                          <input
+                            type="text"
+                            value={ciudadManual}
+                            onChange={(e) => setCiudadManual(e.target.value)}
+                            placeholder={ciudad === 'Internacional' ? 'Ej. Madrid, Caracas, Miami' : 'Ej. Bucaramanga, Ibagué, Pasto'}
+                            required
+                            className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-[#E9E1D2] bg-[#FAF7F1] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#1D5DBF]"
+                          />
+                        </div>
+                      )}
                     </div>
 
                     <div>
@@ -1020,6 +1096,21 @@ export const ReportFormModal: React.FC<ReportFormModalProps> = ({
                           <option key={c} value={c}>{c}</option>
                         ))}
                       </select>
+                      {(ciudad === 'Internacional' || ciudad === 'Otra') && (
+                        <div className="mt-2">
+                          <label className="block text-[10px] font-black text-[#7A7264] mb-0.5">
+                            Especifica la ciudad / cobertura *
+                          </label>
+                          <input
+                            type="text"
+                            value={ciudadManual}
+                            onChange={(e) => setCiudadManual(e.target.value)}
+                            placeholder={ciudad === 'Internacional' ? 'Ej. Madrid, Caracas, Miami' : 'Ej. Bucaramanga, Ibagué, Pasto'}
+                            required
+                            className="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-[#E9E1D2] bg-[#FAF7F1] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#1D5DBF]"
+                          />
+                        </div>
+                      )}
                     </div>
 
                     <div>
