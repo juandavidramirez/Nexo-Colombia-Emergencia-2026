@@ -129,10 +129,36 @@ export const CategoryTabs: React.FC<CategoryTabsProps> = ({
     }
   };
 
+  const [navbarHeight, setNavbarHeight] = useState(80);
+
   useEffect(() => {
     checkScroll();
+    
+    const updateNavbarHeight = () => {
+      const headerEl = document.querySelector('header');
+      if (headerEl) {
+        setNavbarHeight(headerEl.offsetHeight);
+      }
+    };
+
+    updateNavbarHeight();
     window.addEventListener('resize', checkScroll);
-    return () => window.removeEventListener('resize', checkScroll);
+    window.addEventListener('resize', updateNavbarHeight);
+
+    let observer: ResizeObserver | null = null;
+    const headerEl = document.querySelector('header');
+    if (headerEl && typeof ResizeObserver !== 'undefined') {
+      observer = new ResizeObserver(() => updateNavbarHeight());
+      observer.observe(headerEl);
+    }
+
+    return () => {
+      window.removeEventListener('resize', checkScroll);
+      window.removeEventListener('resize', updateNavbarHeight);
+      if (observer) {
+        observer.disconnect();
+      }
+    };
   }, []);
 
   const handleScroll = (direction: 'left' | 'right') => {
@@ -143,7 +169,11 @@ export const CategoryTabs: React.FC<CategoryTabsProps> = ({
   };
 
   return (
-    <section id="tabsAnchor" className="sticky top-[61px] sm:top-[76px] z-40 bg-[#FAF7F1]/95 backdrop-blur-md border-y border-[#E9E1D2] py-4 px-4 sm:px-6 shadow-xs">
+    <section 
+      id="tabsAnchor" 
+      className="sticky z-40 bg-[#FAF7F1]/95 backdrop-blur-md border-y border-[#E9E1D2] py-4.5 px-4 sm:px-6 shadow-xs transition-[top] duration-150"
+      style={{ top: `${navbarHeight}px` }}
+    >
       <div className="max-w-7xl mx-auto flex flex-col gap-3.5">
         
         {/* LEVEL 1: Primary Category Tabs with Left & Right Scroll Arrow Buttons */}

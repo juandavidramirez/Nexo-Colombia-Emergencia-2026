@@ -89,7 +89,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 title="Comparte información"
               >
                 <HeartHandshake className="w-4 h-4 text-white shrink-0" />
-                <span>Compartir</span>
+                <span>Compartir info</span>
               </button>
             </>
           )}

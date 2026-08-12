@@ -110,6 +110,18 @@ export default function App() {
             onSelectCategory={handleNavigateHomeWithCategory}
           />
 
+          {/* Section Header: Encuentra lo que necesitas para ayudar */}
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-12 mb-6">
+            <div className="border-l-4 border-[#0B2A4A] pl-4">
+              <h2 className="text-xl sm:text-2xl font-black text-[#0B2A4A] uppercase tracking-wide">
+                🔎 Encuentra lo que necesitas para ayudar
+              </h2>
+              <p className="text-xs sm:text-sm text-[#7A7264] font-bold mt-1">
+                Filtra por categorías, busca palabras clave o selecciona una ciudad para obtener información curada en tiempo real.
+              </p>
+            </div>
+          </div>
+
           {/* Sticky Architectural Filters: Category Tabs + Search Bar & Dual Dropdown Selectors */}
           <CategoryTabs
             activeCategory={activeCategory}
