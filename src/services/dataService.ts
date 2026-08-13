@@ -15,6 +15,60 @@ export function normalizeText(text: string | undefined | null): string {
     .replace(/[\u0300-\u036f]/g, '');
 }
 
+function getRecordDateInfo(item: EmergencyRecord) {
+  const rawStr = (item.fecha_hora || item.fecha || '').trim();
+  
+  if (rawStr.toLowerCase().includes('hace') || rawStr.toLowerCase().includes('reciente') || rawStr.toLowerCase().includes('hoy') || !rawStr) {
+    const now = new Date();
+    const dayString = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    return {
+      timestamp: now.getTime(),
+      dayString,
+      hasTime: true
+    };
+  }
+
+  const parsed = new Date(rawStr);
+  if (!isNaN(parsed.getTime())) {
+    const year = parsed.getFullYear();
+    const month = String(parsed.getMonth() + 1).padStart(2, '0');
+    const day = String(parsed.getDate()).padStart(2, '0');
+    const dayString = `${year}-${month}-${day}`;
+    
+    const hasTimeInString = /T\d{2}:\d{2}|\d{2}:\d{2}/.test(rawStr);
+    const hasTime = hasTimeInString || (parsed.getHours() !== 0 || parsed.getMinutes() !== 0 || parsed.getSeconds() !== 0);
+    return {
+      timestamp: parsed.getTime(),
+      dayString,
+      hasTime
+    };
+  }
+
+  const hasTime = /\d{1,2}:\d{2}/.test(rawStr);
+  const match = rawStr.match(/(\d{1,2})[\/\s]+([a-zA-Záéíóúñ]+|\d{1,2})[\/\s]+(\d{2,4})/);
+  let dayString = '2026-01-01';
+  if (match) {
+    const d = match[1].padStart(2, '0');
+    const mStr = match[2].toLowerCase();
+    const months: Record<string, string> = {
+      ene: '01', feb: '02', mar: '03', abr: '04', may: '05', jun: '06',
+      jul: '07', ago: '08', sep: '09', oct: '10', nov: '11', dic: '12',
+      enero: '01', febrero: '02', marzo: '03', abril: '04', mayo: '05', junio: '06',
+      julio: '07', agosto: '08', septiembre: '09', octubre: '10', noviembre: '11', diciembre: '12'
+    };
+    const m = months[mStr] || (isNaN(Number(mStr)) ? '01' : mStr.padStart(2, '0'));
+    let y = match[3];
+    if (y.length === 2) y = `20${y}`;
+    dayString = `${y}-${m}-${d}`;
+  }
+
+  return {
+    timestamp: Date.parse(rawStr) || 0,
+    dayString,
+    hasTime
+  };
+}
+
 class DataService {
   private records: EmergencyRecord[] = INITIAL_RECORDS;
   private balance: EmergencyBalance = INITIAL_BALANCE;
@@ -271,6 +325,9 @@ class DataService {
       recibe: item.recibe || item.que_reciben_que_ofrecen || '',
       direccion: item.direccion || item.direccion_lugar || '',
       maps_link: item.maps_link || item.link_google_maps || '',
+      tipo_espacio: item.tipo_espacio || item.Tipo || item.tipo || 'Acopio',
+      Tipo: item.Tipo || item.tipo_espacio || item.tipo || 'Acopio',
+      tipo: item.tipo || item.tipo_espacio || item.Tipo || 'Acopio',
 
       // Necesidades
       nivel_urgencia: item.nivel_urgencia || 'urgent',
@@ -314,7 +371,7 @@ class DataService {
   ): EmergencyRecord[] {
     const q = normalizeText(searchQuery);
 
-    return this.records.filter((item) => {
+    const filtered = this.records.filter((item) => {
       // 1. Must belong strictly to active category
       if (item.categoria !== category) return false;
 
@@ -357,8 +414,9 @@ class DataService {
             if (!trans.includes('ambas')) return false;
           }
         } else if (category === 'acopio') {
+          const rawTipo = normalizeText(`${item.tipo_espacio || item.Tipo || item.tipo || ''}`);
           const text = normalizeText(`${item.titulo} ${item.recibe} ${item.descripcion} ${item.organizacion}`);
-          const isAlbergue = text.includes('albergue') || text.includes('refugio') || text.includes('hospedaje') || text.includes('alojamiento') || text.includes('paso') || text.includes('dormir') || text.includes('refugiat') || text.includes('albergado');
+          const isAlbergue = rawTipo.includes('albergue') || rawTipo.includes('refugio') || rawTipo === 'albergue' || text.includes('albergue') || text.includes('refugio') || text.includes('hospedaje') || text.includes('alojamiento') || text.includes('paso') || text.includes('dormir') || text.includes('refugiat') || text.includes('albergado');
           if (categorySubFilter === 'Albergues y refugios' && !isAlbergue) return false;
           if (categorySubFilter === 'Puntos de acopio' && isAlbergue) return false;
         } else if (category === 'necesidades') {
@@ -433,6 +491,29 @@ class DataService {
       }
 
       return true;
+    });
+
+    return filtered.sort((a, b) => {
+      const infoA = getRecordDateInfo(a);
+      const infoB = getRecordDateInfo(b);
+
+      const dayTimeA = infoA.dayString ? new Date(infoA.dayString).getTime() : 0;
+      const dayTimeB = infoB.dayString ? new Date(infoB.dayString).getTime() : 0;
+
+      if (dayTimeA !== dayTimeB) {
+        return dayTimeB - dayTimeA; // most recent day first
+      }
+
+      // Same day: records with time come before records without time
+      if (infoA.hasTime && !infoB.hasTime) return -1;
+      if (!infoA.hasTime && infoB.hasTime) return 1;
+
+      // Both have time or both do not have time on the same day: sort by timestamp descending
+      if (infoA.timestamp !== infoB.timestamp) {
+        return infoB.timestamp - infoA.timestamp;
+      }
+
+      return 0;
     });
   }
 

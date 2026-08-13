@@ -25,7 +25,26 @@ export const DetailModal: React.FC<DetailModalProps> = ({ record, onClose }) => 
   const isHub = record.categoria === 'hub';
   const isContactos = record.categoria === 'contactos';
 
-  const modalTitle = record.organizacion || record.titulo || record.entidad || 'Detalle de información';
+  const getModalTitle = (rec: EmergencyRecord) => {
+    switch (rec.categoria) {
+      case 'donar':
+        return rec.organizacion || rec.titulo || 'Donación';
+      case 'hub':
+        return rec.titulo || rec.organizacion || 'Iniciativa';
+      case 'acopio':
+        return rec.titulo || rec.organizacion || 'Punto de acopio';
+      case 'necesidades':
+        return rec.titulo || rec.organizacion || 'Necesidad urgente';
+      case 'buscar':
+        return rec.titulo || rec.organizacion || 'Búsqueda';
+      case 'contactos':
+        return rec.entidad || rec.titulo || rec.organizacion || 'Contacto oficial';
+      default:
+        return rec.titulo || rec.organizacion || rec.entidad || 'Detalle de información';
+    }
+  };
+
+  const modalTitle = getModalTitle(record);
 
   const contactVal = record.contacto || '';
   const rawLink = record.link_display || record.link_externo || record.link;

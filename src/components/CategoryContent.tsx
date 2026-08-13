@@ -224,8 +224,9 @@ export const CategoryContent: React.FC<CategoryContentProps> = ({
       <div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {displayedRecords.map((it) => {
-            const textAcopio = normalizeText(`${it.titulo} ${it.recibe} ${it.descripcion} ${it.organizacion} ${it.tipo_espacio}`);
-            const isAlbergue = textAcopio.includes('albergue') || textAcopio.includes('refugio') || textAcopio.includes('hospedaje') || textAcopio.includes('alojamiento') || textAcopio.includes('dormir');
+            const rawTipo = normalizeText(`${it.tipo_espacio || it.Tipo || it.tipo || ''}`);
+            const textAcopio = normalizeText(`${it.titulo} ${it.recibe} ${it.descripcion} ${it.organizacion}`);
+            const isAlbergue = rawTipo.includes('albergue') || rawTipo.includes('refugio') || rawTipo === 'albergue' || textAcopio.includes('albergue') || textAcopio.includes('refugio') || textAcopio.includes('hospedaje') || textAcopio.includes('alojamiento') || textAcopio.includes('dormir');
             return (
               <div 
                 key={it.id} 
