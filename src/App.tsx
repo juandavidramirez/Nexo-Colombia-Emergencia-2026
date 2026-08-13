@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { CheckCircle2, X } from 'lucide-react';
+import { Analytics } from '@vercel/analytics/react';
 import { CategoryType, ViewPage, EmergencyRecord } from './types';
 import { dataService } from './services/dataService';
 import { Navbar } from './components/Navbar';
@@ -266,6 +267,9 @@ export default function App() {
           </div>
         </div>
       )}
+
+      {/* Vercel Analytics */}
+      <Analytics />
     </div>
   );
 }
