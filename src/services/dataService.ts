@@ -306,6 +306,32 @@ class DataService {
 
     const finalLink = item.link_display || extractedLink || item.link_externo || item.link || '';
 
+    let computedTitulo = item.titulo || item.nombre || item.nombre_titulo || item.titulo_necesidad || item.tipo_registro || 'Registro';
+    let computedOrganizacion = item.organizacion || item.organizacion_entidad || item.entidad || item.entidad_organismo || item.entidad_plataforma || '';
+    let computedLidera = item.lidera || item.quien_lidera || '';
+    let computedEntidad = item.entidad || item.entidad_organismo || item.entidad_plataforma || item.organizacion || '';
+
+    if (category === 'hub') {
+      computedTitulo = item.titulo || item.nombre || item.nombre_titulo || item.tipo_iniciativa || 'Iniciativa';
+      computedOrganizacion = item.organizacion || item.entidad || '';
+      computedLidera = item.lidera || item.quien_lidera || '';
+    } else if (category === 'donar') {
+      computedOrganizacion = item.organizacion || item.nombre || item.entidad || '';
+      computedTitulo = item.organizacion || item.nombre || item.entidad || 'Donación';
+    } else if (category === 'acopio') {
+      computedTitulo = item.titulo || item.nombre || item.nombre_titulo || 'Punto de acopio';
+      computedOrganizacion = item.organizacion || item.entidad || '';
+    } else if (category === 'necesidades') {
+      computedTitulo = item.titulo || item.titulo_necesidad || item.nombre || 'Necesidad urgente';
+      computedOrganizacion = item.organizacion || item.fuente || '';
+    } else if (category === 'buscar') {
+      computedTitulo = item.nombre || item.titulo || 'Búsqueda';
+      computedOrganizacion = item.organizacion || '';
+    } else if (category === 'contactos') {
+      computedEntidad = item.entidad || item.organizacion || item.nombre || 'Contacto oficial';
+      computedTitulo = item.entidad || item.organizacion || item.nombre || 'Contacto oficial';
+    }
+
     return {
       id: item.id || `${category}_${Math.random().toString(36).substring(2, 9)}`,
       categoria: category,
@@ -313,14 +339,14 @@ class DataService {
       estado: estado,
 
       // Donar
-      organizacion: item.organizacion || item.nombre || item.organizacion_entidad || item.lidera || item.quien_lidera || item.entidad || item.entidad_organismo || item.entidad_plataforma || '',
+      organizacion: computedOrganizacion,
       banco: item.banco || '',
       tipo_cuenta: item.tipo_cuenta || '',
       numero_cuenta: item.numero_cuenta || '',
       tipo_transferencia: item.tipo_transferencia || 'Nacional',
 
       // Acopio & General
-      titulo: item.titulo || item.nombre || item.nombre_titulo || item.titulo_necesidad || item.organizacion || item.organizacion_entidad || item.entidad || item.entidad_organismo || item.entidad_plataforma || item.tipo_registro || 'Registro',
+      titulo: computedTitulo,
       horario: item.horario || item.horario_de_atencion || '',
       recibe: item.recibe || item.que_reciben_que_ofrecen || '',
       direccion: item.direccion || item.direccion_lugar || '',
@@ -335,7 +361,7 @@ class DataService {
       fuente: item.fuente || item.fuente_link || item.fuente_oficial || '',
 
       // Iniciativas
-      lidera: item.lidera || item.quien_lidera || item.organizacion || '',
+      lidera: computedLidera,
       tipo_iniciativa: item.tipo_iniciativa || '',
       link_display: item.link_display || finalLink,
       link_externo: item.link_externo || finalLink,
@@ -350,7 +376,7 @@ class DataService {
       ),
 
       // Contactos
-      entidad: item.entidad || item.entidad_organismo || item.entidad_plataforma || item.organizacion || '',
+      entidad: computedEntidad,
 
       // Audit metadata
       confirmado_por: item.confirmado_por || item.verificado_por || item.extraido_por || item.curador || item.curado_por || item.revisado_por || '',
