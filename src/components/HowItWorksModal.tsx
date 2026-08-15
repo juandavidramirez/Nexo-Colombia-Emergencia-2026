@@ -71,16 +71,36 @@ export const HowItWorksModal: React.FC<HowItWorksModalProps> = ({ isOpen, onClos
 
                 <div className="space-y-3 pt-2">
                   <div className="text-xs font-bold text-[#0B2A4A]">
-                    La información está clasificada en 5 categorías principales:
+                    La información está clasificada en 6 categorías principales:
                   </div>
 
                   <ul className="space-y-2.5">
+                    <li className="flex gap-2.5 items-start">
+                      <span className="text-xs shrink-0 mt-0.5">💰</span>
+                      <div>
+                        <span className="font-extrabold text-[#0B2A4A] block text-xs">Dónde donar dinero</span>
+                        <span className="text-[11px] text-[#7A7264] leading-normal block">
+                          Cuentas bancarias oficiales de fundaciones y organizaciones con verificación estricta para transferencias y donaciones monetarias directas.
+                        </span>
+                      </div>
+                    </li>
+
                     <li className="flex gap-2.5 items-start">
                       <span className="text-xs shrink-0 mt-0.5">🆘</span>
                       <div>
                         <span className="font-extrabold text-[#0B2A4A] block text-xs">Qué se necesita ahora (Necesidades)</span>
                         <span className="text-[11px] text-[#7A7264] leading-normal block">
                           Requerimientos urgentes y carencias recolectadas directamente en el terreno, con prioridad en las ciudades y comunidades más afectadas.
+                        </span>
+                      </div>
+                    </li>
+
+                    <li className="flex gap-2.5 items-start">
+                      <span className="text-xs shrink-0 mt-0.5">📦</span>
+                      <div>
+                        <span className="font-extrabold text-[#0B2A4A] block text-xs">Puntos de acopio y albergues</span>
+                        <span className="text-[11px] text-[#7A7264] leading-normal block">
+                          Centros autorizados para recibir ayudas materiales físicas y espacios de refugio temporal para familias afectadas.
                         </span>
                       </div>
                     </li>
@@ -111,16 +131,6 @@ export const HowItWorksModal: React.FC<HowItWorksModalProps> = ({ isOpen, onClos
                         <span className="font-extrabold text-[#0B2A4A] block text-xs">Contactos Oficiales</span>
                         <span className="text-[11px] text-[#7A7264] leading-normal block">
                           Directorio telefónico y canales de emergencia de organismos de socorro, alcaldías, gobernaciones y entidades de salud pública.
-                        </span>
-                      </div>
-                    </li>
-
-                    <li className="flex gap-2.5 items-start">
-                      <span className="text-xs shrink-0 mt-0.5">📦</span>
-                      <div>
-                        <span className="font-extrabold text-[#0B2A4A] block text-xs">Puntos de Acopio y Donación</span>
-                        <span className="text-[11px] text-[#7A7264] leading-normal block">
-                          Centros autorizados para recibir ayudas materiales físicas y cuentas bancarias oficiales para transferencias de dinero seguras.
                         </span>
                       </div>
                     </li>
